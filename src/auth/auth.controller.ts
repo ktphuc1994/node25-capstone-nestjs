@@ -1,19 +1,7 @@
-import {
-  Controller,
-  Post,
-  Req,
-  Body,
-  UseGuards,
-  UnauthorizedException,
-  HttpCode,
-  SerializeOptions,
-} from '@nestjs/common';
-
-// import guards
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Post, Req, Body, HttpCode } from '@nestjs/common';
 
 // import local DTO
-import { CreateNguoiDungDto, LoginInfoDto, ResSuccess } from '../dto/index.dto';
+import { CreateNguoiDungDto, LoginInfoDto } from '../dto/index.dto';
 
 // import local service
 import { AuthService } from './auth.service';
@@ -28,21 +16,15 @@ export class AuthController {
 
   @HttpCode(200)
   @Post('login')
-  async login(
-    @Body() body: LoginInfoDto,
-  ): Promise<ResSuccess<{ Authorization: string }>> {
+  async login(@Body() body: LoginInfoDto): Promise<{ Authorization: string }> {
     const user = await this.authService.validateUser(body);
     const Authorization = await this.authService.login(user);
-    return {
-      message: 'Login Successfull',
-      content: { Authorization },
-    };
+    return { Authorization };
   }
 
   @Post('register')
-  async register(
-    @Body() newUser: CreateNguoiDungDto,
-  ): Promise<ResSuccess<string>> {
+  async register(@Body() newUser: CreateNguoiDungDto): Promise<string> {
+    console.log(newUser);
     return this.authService.register(newUser);
   }
 }

@@ -3,6 +3,8 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+// import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
+// import { TransformToPlainInterceptor } from './interceptors/transform-to-plain.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,9 +12,11 @@ async function bootstrap() {
   app.use(express.static('.'));
   app.setGlobalPrefix('api');
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  // app.useGlobalInterceptors(new TransformResponseInterceptor());
+  // app.useGlobalInterceptors(new TransformToPlainInterceptor());
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const config = new DocumentBuilder()
     .setTitle('Node25 - Movie - NestJS')

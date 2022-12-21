@@ -25,9 +25,9 @@ import {
 
 // import bcrypt
 import * as bcrypt from 'bcrypt';
+import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
 
 // import error codes
-import { prismaErrorCodes } from '../database/prismaErrorCodes.enum';
 
 @Injectable()
 export class AuthService {
@@ -60,9 +60,7 @@ export class AuthService {
   }
 
   // USER REGISTER - Check existance and Create new user
-  async register(
-    registerData: CreateNguoiDungDto,
-  ): Promise<ResSuccess<string>> {
+  async register(registerData: CreateNguoiDungDto): Promise<string> {
     try {
       const hashedPass = bcrypt.hashSync(
         registerData.mat_khau,
@@ -72,7 +70,7 @@ export class AuthService {
         ...registerData,
         mat_khau: hashedPass,
       });
-      return { message: 'User created successfully', content: 'Success' };
+      return 'User created successfully';
     } catch (err) {
       if (
         err instanceof PrismaClientKnownRequestError &&

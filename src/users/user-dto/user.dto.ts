@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { NguoiDung } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import {
   IsNumber,
@@ -15,7 +16,7 @@ export enum LoaiNguoiDung {
 }
 
 @Exclude()
-export class FullNguoiDungDto {
+export class NguoiDungEntity implements NguoiDung {
   @IsNumber()
   @ApiProperty()
   @Expose()
@@ -47,21 +48,34 @@ export class FullNguoiDungDto {
   @ApiProperty()
   @Expose()
   loai_nguoi_dung: string;
+
+  @Exclude()
+  is_removed: boolean;
 }
 
-export class LoginInfoDto extends PickType(FullNguoiDungDto, [
+export class LoginInfoDto extends PickType(NguoiDungEntity, [
   'email',
   'mat_khau',
 ]) {}
 
-export class NguoiDungDto extends OmitType(FullNguoiDungDto, ['mat_khau']) {}
-
-export class CreateNguoiDungDto extends OmitType(FullNguoiDungDto, [
-  'tai_khoan',
-  'loai_nguoi_dung',
+export class NguoiDungDto extends OmitType(NguoiDungEntity, [
+  'mat_khau',
+  'is_removed',
 ]) {}
 
-export class UpdateNguoiDungDto extends OmitType(FullNguoiDungDto, [
+export class CreateNguoiDungDto extends OmitType(NguoiDungEntity, [
   'tai_khoan',
   'loai_nguoi_dung',
+  'is_removed',
+]) {}
+
+export class AddNguoiDungDTO extends OmitType(NguoiDungEntity, [
+  'tai_khoan',
+  'is_removed',
+]) {}
+
+export class UpdateNguoiDungDto extends OmitType(NguoiDungEntity, [
+  'tai_khoan',
+  'loai_nguoi_dung',
+  'is_removed',
 ]) {}
