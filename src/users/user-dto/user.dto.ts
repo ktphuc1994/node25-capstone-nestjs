@@ -69,13 +69,22 @@ export class CreateNguoiDungDto extends OmitType(NguoiDungEntity, [
   'is_removed',
 ]) {}
 
-export class AddNguoiDungDTO extends OmitType(NguoiDungEntity, [
+export class UpdateNguoiDungDto extends OmitType(NguoiDungEntity, [
+  'tai_khoan',
+  'loai_nguoi_dung',
+  'is_removed',
+]) {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  mat_khau_moi: string;
+}
+
+export class CreateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
   'tai_khoan',
   'is_removed',
 ]) {}
 
-export class UpdateNguoiDungDto extends OmitType(NguoiDungEntity, [
-  'tai_khoan',
-  'loai_nguoi_dung',
+export class UpdateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
   'is_removed',
 ]) {}

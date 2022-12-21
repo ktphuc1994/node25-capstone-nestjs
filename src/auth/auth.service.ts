@@ -25,9 +25,9 @@ import {
 
 // import bcrypt
 import * as bcrypt from 'bcrypt';
-import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
 
 // import error codes
+import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
 
 @Injectable()
 export class AuthService {
@@ -50,7 +50,7 @@ export class AuthService {
     throw new UnauthorizedException({
       statusCode: HttpStatus.UNAUTHORIZED,
       message: 'Incorrect Password',
-      content: 'Login failed',
+      content: 'UNAUTHORIZED',
     });
   }
 
