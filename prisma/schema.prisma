@@ -11,109 +11,109 @@ datasource db {
 }
 
 model Phim {
-  ma_phim         Int         @id @default(autoincrement())
-  ten_phim        String      @db.VarChar(255)
-  trailer         String      @db.VarChar(255)
-  hinh_anh        String      @db.Text
-  mo_ta           String      @db.Text
-  ngay_khoi_chieu DateTime    @db.Date
-  danh_gia        Int
-  hot             Boolean
-  dang_chieu      Boolean
-  sap_chieu       Boolean
-  is_removed      Boolean     @default(false)
-  Banner          Banner[]
-  LichChieu       LichChieu[]
+  maPhim        Int         @id @default(autoincrement()) @map("ma_phim")
+  tenPhim       String      @map("ten_phim") @db.VarChar(255)
+  trailer       String      @map("trailer") @db.VarChar(255)
+  hinhAnh       String      @map("hinh_anh") @db.Text
+  moTa          String      @map("mo_ta") @db.Text
+  ngayKhoiChieu DateTime    @map("ngay_khoi_chieu") @db.Date
+  danhGia       Int         @map("danh_gia")
+  hot           Boolean
+  dangChieu     Boolean     @map("dang_chieu")
+  sapChieu      Boolean     @map("sap_chieu")
+  isRemoved     Boolean     @default(false) @map("is_removed")
+  banner        Banner[]
+  lichChieu     LichChieu[]
 }
 
 model Banner {
-  ma_banner  Int     @id @default(autoincrement())
-  ma_phim    Int
-  hinh_anh   String  @db.Text
-  is_removed Boolean @default(false)
-  Phim       Phim    @relation(fields: [ma_phim], references: [ma_phim], onDelete: Restrict, onUpdate: Restrict, map: "Banner_ibfk_1")
+  maBanner  Int     @id @default(autoincrement()) @map("ma_banner")
+  maPhim    Int     @map("ma_phim")
+  hinhAnh   String  @map("hinh_anh") @db.Text
+  isRemoved Boolean @default(false) @map("is_removed")
+  phim      Phim    @relation(fields: [maPhim], references: [maPhim], onDelete: Restrict, onUpdate: Restrict, map: "Banner_ibfk_1")
 
-  @@index([ma_phim], map: "ma_phim")
+  @@index([maPhim], map: "maPhim")
 }
 
 model HeThongRap {
-  ma_he_thong_rap  Int      @id @default(autoincrement())
-  ten_he_thong_rap String   @db.VarChar(255)
-  logo             String   @db.Text
-  is_removed       Boolean  @default(false)
-  CumRap           CumRap[]
+  maHeThongRap  Int      @id @default(autoincrement()) @map("ma_he_thong_rap")
+  tenHeThongRap String   @map("ten_he_thong_rap") @db.VarChar(255)
+  logo          String   @db.Text
+  isRemoved     Boolean  @default(false) @map("is_removed")
+  cumRap        CumRap[]
 }
 
 model CumRap {
-  ma_cum_rap      Int        @id @default(autoincrement())
-  ten_cum_rap     String     @db.VarChar(255)
-  dia_chi         String     @db.VarChar(255)
-  ma_he_thong_rap Int
-  is_removed      Boolean    @default(false)
-  HeThongRap      HeThongRap @relation(fields: [ma_he_thong_rap], references: [ma_he_thong_rap], onDelete: Restrict, onUpdate: Restrict, map: "CumRap_ibfk_1")
-  RapPhim         RapPhim[]
+  maCumRap     Int        @id @default(autoincrement()) @map("ma_cum_rap")
+  tenCumRap    String     @map("ten_cum_rap") @db.VarChar(255)
+  diaChi       String     @map("dia_chi") @db.VarChar(255)
+  maHeThongRap Int        @map("ma_he_thong_rap")
+  isRemoved    Boolean    @default(false) @map("is_removed")
+  heThongRap   HeThongRap @relation(fields: [maHeThongRap], references: [maHeThongRap], onDelete: Restrict, onUpdate: Restrict, map: "CumRap_ibfk_1")
+  rapPhim      RapPhim[]
 
-  @@index([ma_he_thong_rap], map: "ma_he_thong_rap")
+  @@index([maHeThongRap], map: "maHeThongRap")
 }
 
 model RapPhim {
-  ma_rap     Int         @id @default(autoincrement())
-  ten_rap    String      @db.VarChar(255)
-  ma_cum_rap Int
-  is_removed Boolean     @default(false)
-  CumRap     CumRap      @relation(fields: [ma_cum_rap], references: [ma_cum_rap], onDelete: Restrict, onUpdate: Restrict, map: "RapPhim_ibfk_1")
-  Ghe        Ghe[]
-  LichChieu  LichChieu[]
+  maRap     Int         @id @default(autoincrement()) @map("ma_rap")
+  tenRap    String      @map("ten_rap") @db.VarChar(255)
+  maCumRap  Int         @map("ma_cum_rap")
+  isRemoved Boolean     @default(false) @map("is_removed")
+  cumRap    CumRap      @relation(fields: [maCumRap], references: [maCumRap], onDelete: Restrict, onUpdate: Restrict, map: "RapPhim_ibfk_1")
+  ghe       Ghe[]
+  lichChieu LichChieu[]
 
-  @@index([ma_cum_rap], map: "ma_cum_rap")
+  @@index([maCumRap], map: "maCumRap")
 }
 
 model Ghe {
-  ma_ghe     Int      @id @default(autoincrement())
-  ten_ghe    String   @db.VarChar(3)
-  loai_ghe   String   @db.VarChar(10)
-  ma_rap     Int?
-  is_removed Boolean  @default(false)
-  RapPhim    RapPhim? @relation(fields: [ma_rap], references: [ma_rap], onDelete: Cascade, onUpdate: SetNull, map: "Ghe_ibfk_1")
-  DatVe      DatVe[]
+  maGhe     Int      @id @default(autoincrement()) @map("ma_ghe")
+  tenGhe    String   @map("ten_ghe") @db.VarChar(3)
+  loaiGhe   String   @map("loai_ghe") @db.VarChar(10)
+  maRap     Int?     @map("ma_rap")
+  isRemoved Boolean  @default(false) @map("is_removed")
+  rapPhim   RapPhim? @relation(fields: [maRap], references: [maRap], onDelete: Cascade, onUpdate: SetNull, map: "Ghe_ibfk_1")
+  datVe     DatVe[]
 
-  @@index([ma_rap], map: "ma_rap")
+  @@index([maRap], map: "maRap")
 }
 
 model NguoiDung {
-  tai_khoan       Int     @id @default(autoincrement())
-  ho_ten          String  @db.VarChar(255)
-  email           String  @unique @db.VarChar(255)
-  so_dt           String  @db.VarChar(20)
-  mat_khau        String  @db.VarChar(255)
-  loai_nguoi_dung String  @default("USER") @db.VarChar(10)
-  is_removed      Boolean @default(false)
-  DatVe           DatVe[]
+  taiKhoan      Int     @id @default(autoincrement()) @map("tai_khoan")
+  hoTen         String  @map("ho_ten") @db.VarChar(255)
+  email         String  @unique @db.VarChar(255)
+  soDT          String  @map("so_dt") @db.VarChar(20)
+  matKhau       String  @map("mat_khau") @db.VarChar(255)
+  loaiNguoiDung String  @default("USER") @map("loai_nguoi_dung") @db.VarChar(10)
+  isRemoved     Boolean @default(false) @map("is_removed")
+  datVe         DatVe[]
 }
 
 model LichChieu {
-  ma_lich_chieu  Int      @id @default(autoincrement())
-  ma_rap         Int?
-  ma_phim        Int?
-  ngay_gio_chieu DateTime @db.Date
-  gia_ve         Int
-  is_removed     Boolean  @default(false)
-  RapPhim        RapPhim? @relation(fields: [ma_rap], references: [ma_rap], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_1")
-  Phim           Phim?    @relation(fields: [ma_phim], references: [ma_phim], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_2s")
-  DatVe          DatVe[]
+  maLichChieu  Int      @id @default(autoincrement()) @map("ma_lich_chieu")
+  maRap        Int?     @map("ma_rap")
+  maPhim       Int?     @map("ma_phim")
+  ngayGioChieu DateTime @map("ngay_gio_chieu") @db.Date
+  giaVe        Int      @map("gia_ve")
+  isRemoved    Boolean  @default(false) @map("is_removed")
+  rapPhim      RapPhim? @relation(fields: [maRap], references: [maRap], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_1")
+  phim         Phim?    @relation(fields: [maPhim], references: [maPhim], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_2s")
+  datVe        DatVe[]
 
-  @@index([ma_rap, ma_phim], map: "LichChieu_indexes")
+  @@index([maRap, maPhim], map: "LichChieu_indexes")
 }
 
 model DatVe {
-  tai_khoan     Int
-  ma_lich_chieu Int
-  ma_ghe        Int
-  is_removed    Boolean   @default(false)
-  NguoiDung     NguoiDung @relation(fields: [tai_khoan], references: [tai_khoan], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_1")
-  LichChieu     LichChieu @relation(fields: [ma_lich_chieu], references: [ma_lich_chieu], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_2")
-  Ghe           Ghe       @relation(fields: [ma_ghe], references: [ma_ghe], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_3")
+  taiKhoan    Int       @map("tai_khoan")
+  maLichChieu Int       @map("ma_lich_chieu")
+  maGhe       Int       @map("ma_ghe")
+  isRemoved   Boolean   @default(false) @map("is_removed")
+  nguoiDung   NguoiDung @relation(fields: [taiKhoan], references: [taiKhoan], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_1")
+  lichChieu   LichChieu @relation(fields: [maLichChieu], references: [maLichChieu], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_2")
+  ghe         Ghe       @relation(fields: [maGhe], references: [maGhe], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_3")
 
-  @@id([tai_khoan, ma_lich_chieu, ma_ghe])
-  @@index([tai_khoan, ma_lich_chieu, ma_ghe], map: "DatVe_indexes")
+  @@id([taiKhoan, maLichChieu, maGhe])
+  @@index([taiKhoan, maLichChieu, maGhe], map: "DatVe_indexes")
 }

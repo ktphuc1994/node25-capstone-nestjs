@@ -10,8 +10,8 @@ import {
 } from 'class-validator';
 
 export enum LoaiNguoiDung {
-  MASTER = 'MASTER',
   ADMIN = 'ADMIN',
+  MODERATOR = 'MODERATOR',
   USER = 'USER',
 }
 
@@ -20,7 +20,7 @@ export class NguoiDungEntity implements NguoiDung {
   @IsNumber()
   @ApiProperty()
   @Expose()
-  tai_khoan: number;
+  taiKhoan: number;
 
   @IsEmail()
   @ApiProperty()
@@ -30,61 +30,61 @@ export class NguoiDungEntity implements NguoiDung {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  mat_khau: string;
+  matKhau: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   @Expose()
-  ho_ten: string;
+  hoTen: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   @Expose()
-  so_dt: string;
+  soDT: string;
 
   @IsEnum(LoaiNguoiDung)
   @ApiProperty()
   @Expose()
-  loai_nguoi_dung: string;
+  loaiNguoiDung: string;
 
   @Exclude()
-  is_removed: boolean;
+  isRemoved: boolean;
 }
 
 export class LoginInfoDto extends PickType(NguoiDungEntity, [
   'email',
-  'mat_khau',
+  'matKhau',
 ]) {}
 
 export class NguoiDungDto extends OmitType(NguoiDungEntity, [
-  'mat_khau',
-  'is_removed',
+  'matKhau',
+  'isRemoved',
 ]) {}
 
 export class CreateNguoiDungDto extends OmitType(NguoiDungEntity, [
-  'tai_khoan',
-  'loai_nguoi_dung',
-  'is_removed',
+  'taiKhoan',
+  'loaiNguoiDung',
+  'isRemoved',
 ]) {}
 
 export class UpdateNguoiDungDto extends OmitType(NguoiDungEntity, [
-  'tai_khoan',
-  'loai_nguoi_dung',
-  'is_removed',
+  'taiKhoan',
+  'loaiNguoiDung',
+  'isRemoved',
 ]) {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  mat_khau_moi: string;
+  matKhauMoi: string;
 }
 
 export class CreateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
-  'tai_khoan',
-  'is_removed',
+  'taiKhoan',
+  'isRemoved',
 ]) {}
 
 export class UpdateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
-  'is_removed',
+  'isRemoved',
 ]) {}

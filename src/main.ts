@@ -16,7 +16,7 @@ async function bootstrap() {
   // app.useGlobalInterceptors(new TransformResponseInterceptor());
   // app.useGlobalInterceptors(new TransformToPlainInterceptor());
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   const config = new DocumentBuilder()
     .setTitle('Node25 - Movie - NestJS')

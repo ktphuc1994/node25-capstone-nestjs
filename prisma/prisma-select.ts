@@ -1,7 +1,7 @@
 export const userSelectNoPass = {
-  tai_khoan: true,
+  taiKhoan: true,
   email: true,
-  ho_ten: true,
-  so_dt: true,
-  loai_nguoi_dung: true,
+  hoTen: true,
+  soDT: true,
+  loaiNguoiDung: true,
 };

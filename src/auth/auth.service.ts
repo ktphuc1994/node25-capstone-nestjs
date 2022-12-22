@@ -38,12 +38,12 @@ export class AuthService {
   ) {}
 
   // USER VALIDATION - Is email and password correct
-  async validateUser({ email, mat_khau }: LoginInfoDto): Promise<NguoiDungDto> {
+  async validateUser({ email, matKhau }: LoginInfoDto): Promise<NguoiDungDto> {
     const user = await this.usersService.getUserByEmail(email);
 
-    const checkPass = bcrypt.compareSync(mat_khau, user.mat_khau);
+    const checkPass = bcrypt.compareSync(matKhau, user.matKhau);
     if (checkPass) {
-      const { mat_khau: password, is_removed, ...result } = user;
+      const { matKhau: password, isRemoved, ...result } = user;
       return result;
     }
 
@@ -63,12 +63,12 @@ export class AuthService {
   async register(registerData: CreateNguoiDungDto): Promise<string> {
     try {
       const hashedPass = bcrypt.hashSync(
-        registerData.mat_khau,
+        registerData.matKhau,
         Number(this.configService.get('BCRYPT_SALT')),
       );
       await this.usersService.create({
         ...registerData,
-        mat_khau: hashedPass,
+        matKhau: hashedPass,
       });
       return 'User created successfully';
     } catch (err) {

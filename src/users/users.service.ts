@@ -25,7 +25,7 @@ export class UsersService {
   // GET user information by Email
   async getUserByEmail(email: string): Promise<NguoiDung> {
     const user = await prisma.nguoiDung.findFirst({
-      where: { email, is_removed: false },
+      where: { email, isRemoved: false },
     });
     if (!user) {
       throw new NotFoundException({
@@ -51,23 +51,37 @@ export class UsersService {
   // LẤY Danh Sách người dùng
   async getUserList(): Promise<NguoiDungDto[]> {
     return await prisma.nguoiDung.findMany({
-      where: { is_removed: false },
+      where: { isRemoved: false },
       select: userSelectNoPass,
     });
   }
 
-  // LẤY thông tin người dùng bằng ho_ten
+  // TÌM KIẾM danh sách người dùng bằng hoTen
   async getUsersByName(tuKhoa: string): Promise<NguoiDungDto[]> {
     return await prisma.nguoiDung.findMany({
-      where: { ho_ten: { contains: tuKhoa }, is_removed: false },
+      where: { hoTen: { contains: tuKhoa }, isRemoved: false },
+      select: userSelectNoPass,
+    });
+  }
+
+  // TÌM KIẾM danh sách người dùng bằng hoTen và phân trang
+  async getUsersPagination(
+    tuKhoa: string,
+    soTrang: number,
+    soPhanTuTrenTrang: number,
+  ): Promise<NguoiDungDto[]> {
+    return await prisma.nguoiDung.findMany({
+      where: { hoTen: { contains: tuKhoa } },
+      skip: (soTrang - 1) * soPhanTuTrenTrang,
+      take: soPhanTuTrenTrang,
       select: userSelectNoPass,
     });
   }
 
   // LẤY thông tin người dùng bằng ID
-  async getUserInfoById(tai_khoan: number): Promise<NguoiDungDto | null> {
+  async getUserInfoById(taiKhoan: number): Promise<NguoiDungDto | null> {
     return await prisma.nguoiDung.findFirst({
-      where: { tai_khoan, is_removed: false },
+      where: { taiKhoan, isRemoved: false },
       select: userSelectNoPass,
     });
   }
@@ -75,27 +89,27 @@ export class UsersService {
   // THÊM người dùng
   async addUser(newUser: Prisma.NguoiDungCreateInput): Promise<NguoiDungDto> {
     const user = await prisma.nguoiDung.create({ data: newUser });
-    delete user.mat_khau;
-    delete user.is_removed;
+    delete user.matKhau;
+    delete user.isRemoved;
     return user;
   }
 
   // CẬP NHẬT Thông tin người dùng (user)
   async updateUser(
     updateUserInput: UpdateNguoiDungDto,
-    tai_khoan: number,
+    taiKhoan: number,
   ): Promise<NguoiDungDto> {
-    const { mat_khau_moi, ...userInfo } = updateUserInput;
-    userInfo.mat_khau = bcrypt.hashSync(
-      mat_khau_moi,
+    const { matKhauMoi, ...userInfo } = updateUserInput;
+    userInfo.matKhau = bcrypt.hashSync(
+      matKhauMoi,
       Number(this.configService.get('BCRYPT_SALT')),
     );
     const updatedUser = await prisma.nguoiDung.update({
-      where: { tai_khoan },
+      where: { taiKhoan },
       data: userInfo,
     });
-    delete updatedUser.mat_khau;
-    delete updatedUser.is_removed;
+    delete updatedUser.matKhau;
+    delete updatedUser.isRemoved;
     return updatedUser;
   }
 
@@ -103,22 +117,22 @@ export class UsersService {
   async updateUserAdmin(
     userInfo: UpdateNguoiDungDtoAdmin,
   ): Promise<NguoiDungDto> {
-    userInfo.mat_khau = bcrypt.hashSync(
-      userInfo.mat_khau,
+    userInfo.matKhau = bcrypt.hashSync(
+      userInfo.matKhau,
       Number(this.configService.get('BCRYPT_SALT')),
     );
     const updatedUser = await prisma.nguoiDung.update({
-      where: { tai_khoan: userInfo.tai_khoan },
+      where: { taiKhoan: userInfo.taiKhoan },
       data: userInfo,
     });
-    delete updatedUser.mat_khau;
-    delete updatedUser.is_removed;
+    delete updatedUser.matKhau;
+    delete updatedUser.isRemoved;
     return updatedUser;
   }
 
   // XÓA người dùng
-  async deleteUser(tai_khoan: number) {
-    await prisma.nguoiDung.delete({ where: { tai_khoan } });
+  async deleteUser(taiKhoan: number) {
+    await prisma.nguoiDung.delete({ where: { taiKhoan } });
     return 'Deleted user successfully';
   }
 }

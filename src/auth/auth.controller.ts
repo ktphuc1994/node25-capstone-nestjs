@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Body, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 
 // import local DTO
 import { CreateNguoiDungDto, LoginInfoDto } from '../dto/index.dto';

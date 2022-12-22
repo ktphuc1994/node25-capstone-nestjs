@@ -14,12 +14,11 @@ import {
   HttpStatus,
   Delete,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // import local Type
-import { RequestWithUser } from '../dto/common.dto';
+import { PaginationQuery, RequestWithUser } from '../dto/common.dto';
 import {
   CreateNguoiDungDtoAdmin,
   LoaiNguoiDung,
@@ -58,6 +57,18 @@ export class UsersController {
     return await this.usersService.getUsersByName(tuKhoa);
   }
 
+  @Get('TimKiemNguoiDungPhanTrang')
+  async getUsersPagination(
+    @Query()
+    { tuKhoa, soTrang, soPhanTuTrenTrang }: PaginationQuery,
+  ): Promise<NguoiDungDto[]> {
+    return this.usersService.getUsersPagination(
+      tuKhoa,
+      soTrang,
+      soPhanTuTrenTrang,
+    );
+  }
+
   @ApiBearerAuth()
   @UseGuards(AuthGuard('JwtAuth'))
   @Get('ThongTinTaiKhoan')
@@ -67,8 +78,8 @@ export class UsersController {
 
   @Get('LayThongTinNguoiDung/:taiKhoan')
   async getUserInfoById(
-    @Param('taiKhoan', ParseIntPipe) tai_khoan: number,
-  ): Promise<NguoiDungDto | string> {
+    @Param('taiKhoan') tai_khoan: number,
+  ): Promise<NguoiDungDto> {
     const user = await this.usersService.getUserInfoById(tai_khoan);
     if (user) {
       return user;
@@ -92,9 +103,9 @@ export class UsersController {
     @Req() req: RequestWithUser,
     @Body() body: UpdateNguoiDungDto,
   ): Promise<NguoiDungDto> {
-    const { tai_khoan, email } = req.user;
-    await this.authService.validateUser({ email, mat_khau: body.mat_khau });
-    return await this.usersService.updateUser(body, tai_khoan);
+    const { taiKhoan, email } = req.user;
+    await this.authService.validateUser({ email, matKhau: body.matKhau });
+    return await this.usersService.updateUser(body, taiKhoan);
   }
 
   @Put('CapNhatThongTinNguoiDungAdmin')
