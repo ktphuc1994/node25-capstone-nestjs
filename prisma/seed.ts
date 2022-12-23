@@ -3,6 +3,9 @@ const prisma = new PrismaClient();
 
 import movieList from '../dataJson/DanhSachPhim';
 import userList from '../dataJson/DanhSachNguoiDung';
+import movieChainList from '../dataJson/HeThongRap_CumRap';
+import bannerList from '../dataJson/Banner';
+import lichChieuList from '../dataJson/LichChieu';
 
 // import bcrypt
 import * as bcrypt from 'bcrypt';
@@ -27,6 +30,29 @@ const main = async () => {
     });
     console.log(`Created user with id: ${user.taiKhoan}`);
   }
+
+  for (const mc of movieChainList) {
+    const movieChain = await prisma.heThongRap.create({
+      data: mc,
+    });
+    console.log(`Created Movie Chain with name: ${movieChain.tenHeThongRap}`);
+  }
+
+  for (const b of bannerList) {
+    const banner = await prisma.banner.create({
+      data: b,
+    });
+    console.log(`Created Banner with name: ${banner.maBanner}`);
+  }
+
+  for (const lc of lichChieuList) {
+    const date = new Date(lc.ngayGioChieu);
+    const lichChieu = await prisma.lichChieu.create({
+      data: { ...lc, ngayGioChieu: date.toISOString() },
+    });
+    console.log(`Created Lich Chieu with name: ${lichChieu.maLichChieu}`);
+  }
+
   console.log(`Seeding finished.`);
 };
 

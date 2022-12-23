@@ -3,8 +3,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 // import local modules
-import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { MovieModule } from './movie/movie.module';
 
 // import local controllers
 import { AppController } from './app.controller';
@@ -17,7 +18,12 @@ import { HttpExceptionFilter } from './filter/http-exceptions.filter';
 import { PrismaClientExceptionFilter } from './filter/prisma-client-exceptions.filter';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), UsersModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
+    UsersModule,
+    MovieModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
