@@ -27,7 +27,7 @@ import {
 import * as bcrypt from 'bcrypt';
 
 // import error codes
-import { prismaErrorCodes } from '../database/prismaErrorCodes.enum';
+import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
 
 @Injectable()
 export class AuthService {
@@ -38,19 +38,19 @@ export class AuthService {
   ) {}
 
   // USER VALIDATION - Is email and password correct
-  async validateUser({ email, mat_khau }: LoginInfoDto): Promise<NguoiDungDto> {
+  async validateUser({ email, matKhau }: LoginInfoDto): Promise<NguoiDungDto> {
     const user = await this.usersService.getUserByEmail(email);
 
-    const checkPass = bcrypt.compareSync(mat_khau, user.mat_khau);
+    const checkPass = bcrypt.compareSync(matKhau, user.matKhau);
     if (checkPass) {
-      const { mat_khau: password, is_removed, ...result } = user;
+      const { matKhau: password, isRemoved, ...result } = user;
       return result;
     }
 
     throw new UnauthorizedException({
       statusCode: HttpStatus.UNAUTHORIZED,
       message: 'Incorrect Password',
-      content: 'Login failed',
+      content: 'UNAUTHORIZED',
     });
   }
 
@@ -60,19 +60,17 @@ export class AuthService {
   }
 
   // USER REGISTER - Check existance and Create new user
-  async register(
-    registerData: CreateNguoiDungDto,
-  ): Promise<ResSuccess<string>> {
+  async register(registerData: CreateNguoiDungDto): Promise<string> {
     try {
       const hashedPass = bcrypt.hashSync(
-        registerData.mat_khau,
+        registerData.matKhau,
         Number(this.configService.get('BCRYPT_SALT')),
       );
       await this.usersService.create({
         ...registerData,
-        mat_khau: hashedPass,
+        matKhau: hashedPass,
       });
-      return { message: 'User created successfully', content: 'Success' };
+      return 'User created successfully';
     } catch (err) {
       if (
         err instanceof PrismaClientKnownRequestError &&

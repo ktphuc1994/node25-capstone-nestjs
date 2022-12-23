@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { NguoiDung } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import {
   IsNumber,
@@ -9,17 +10,17 @@ import {
 } from 'class-validator';
 
 export enum LoaiNguoiDung {
-  MASTER = 'MASTER',
   ADMIN = 'ADMIN',
+  MODERATOR = 'MODERATOR',
   USER = 'USER',
 }
 
 @Exclude()
-export class FullNguoiDungDto {
+export class NguoiDungEntity implements NguoiDung {
   @IsNumber()
   @ApiProperty()
   @Expose()
-  tai_khoan: number;
+  taiKhoan: number;
 
   @IsEmail()
   @ApiProperty()
@@ -29,39 +30,61 @@ export class FullNguoiDungDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  mat_khau: string;
+  matKhau: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   @Expose()
-  ho_ten: string;
+  hoTen: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   @Expose()
-  so_dt: string;
+  soDT: string;
 
   @IsEnum(LoaiNguoiDung)
   @ApiProperty()
   @Expose()
-  loai_nguoi_dung: string;
+  loaiNguoiDung: string;
+
+  @Exclude()
+  isRemoved: boolean;
 }
 
-export class LoginInfoDto extends PickType(FullNguoiDungDto, [
+export class LoginInfoDto extends PickType(NguoiDungEntity, [
   'email',
-  'mat_khau',
+  'matKhau',
 ]) {}
 
-export class NguoiDungDto extends OmitType(FullNguoiDungDto, ['mat_khau']) {}
-
-export class CreateNguoiDungDto extends OmitType(FullNguoiDungDto, [
-  'tai_khoan',
-  'loai_nguoi_dung',
+export class NguoiDungDto extends OmitType(NguoiDungEntity, [
+  'matKhau',
+  'isRemoved',
 ]) {}
 
-export class UpdateNguoiDungDto extends OmitType(FullNguoiDungDto, [
-  'tai_khoan',
-  'loai_nguoi_dung',
+export class CreateNguoiDungDto extends OmitType(NguoiDungEntity, [
+  'taiKhoan',
+  'loaiNguoiDung',
+  'isRemoved',
+]) {}
+
+export class UpdateNguoiDungDto extends OmitType(NguoiDungEntity, [
+  'taiKhoan',
+  'loaiNguoiDung',
+  'isRemoved',
+]) {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  matKhauMoi: string;
+}
+
+export class CreateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
+  'taiKhoan',
+  'isRemoved',
+]) {}
+
+export class UpdateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
+  'isRemoved',
 ]) {}

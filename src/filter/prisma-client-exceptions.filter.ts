@@ -4,7 +4,7 @@ import { BaseExceptionFilter } from '@nestjs/core';
 
 // import prisma
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { prismaErrorCodes } from '../database/prismaErrorCodes.enum';
+import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
 
 @Catch(PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
