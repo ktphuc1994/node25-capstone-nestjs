@@ -19,7 +19,7 @@ import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // import local Type
 import { PaginationQuery, RequestWithUser } from '../dto/common.dto';
-import { BannerEntity } from './movie-dto/movie.dto';
+import { BannerDto } from './movie-dto/movie.dto';
 
 // import local service
 import { MovieService } from './movie.service';
@@ -34,7 +34,7 @@ export class MovieController {
   ) {}
 
   @Get('LayDanhSachBanner')
-  async getBanner(): Promise<BannerEntity[]> {
+  async getBanner(): Promise<BannerDto[]> {
     return await this.movieService.getBanner();
   }
 }

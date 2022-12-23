@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 
 // import prisma class
 import { Banner, Phim } from '@prisma/client';
@@ -38,3 +38,5 @@ export class BannerEntity implements Banner {
   @Exclude()
   isRemoved: boolean;
 }
+
+export class BannerDto extends OmitType(BannerEntity, ['isRemoved']) {}

@@ -5,3 +5,9 @@ export const userSelectNoPass = {
   soDT: true,
   loaiNguoiDung: true,
 };
+
+export const bannerSelect = {
+  maBanner: true,
+  maPhim: true,
+  hinhAnh: true,
+};
