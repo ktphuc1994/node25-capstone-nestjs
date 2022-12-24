@@ -41,7 +41,7 @@ export class MovieEntity implements Phim {
   @IsDateString()
   @IsNotEmpty()
   @ApiPropertyOptional()
-  ngayKhoiChieu: Date;
+  ngayKhoiChieu: string;
 
   @IsNumber()
   @ApiPropertyOptional()

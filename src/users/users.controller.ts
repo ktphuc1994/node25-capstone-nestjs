@@ -53,8 +53,8 @@ export class UsersController {
     return await this.usersService.getUserList();
   }
 
-  @ApiQuery({ name: 'tuKhoa', required: false })
   @Get('TimKiemNguoiDung')
+  @ApiQuery({ name: 'tuKhoa', required: false })
   async getUserByName(
     @Query('tuKhoa', new DefaultValuePipe('')) tuKhoa: string,
   ): Promise<NguoiDungDto[]> {
@@ -64,18 +64,18 @@ export class UsersController {
   @Get('TimKiemNguoiDungPhanTrang')
   async getUsersPagination(
     @Query()
-    { tuKhoa, soTrang, soPhanTuTrenTrang }: PaginationQuery,
+    { tuKhoa, currentPage, itemsPerPage }: PaginationQuery,
   ): Promise<PaginationRes<NguoiDungDto>> {
     return this.usersService.getUsersPagination(
       tuKhoa,
-      soTrang,
-      soPhanTuTrenTrang,
+      currentPage,
+      itemsPerPage,
     );
   }
 
+  @Get('ThongTinTaiKhoan')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('JwtAuth'))
-  @Get('ThongTinTaiKhoan')
   getUserInfo(@Req() req: RequestWithUser) {
     return req.user;
   }
@@ -100,9 +100,9 @@ export class UsersController {
     return await this.usersService.addUser(userInfo);
   }
 
+  @Put('CapNhatThongTinNguoiDung')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('JwtAuth'))
-  @Put('CapNhatThongTinNguoiDung')
   async updateUser(
     @Req() req: RequestWithUser,
     @Body() body: UpdateNguoiDungDto,

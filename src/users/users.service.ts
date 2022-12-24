@@ -19,7 +19,7 @@ import {
 } from './user-dto/user.dto';
 
 // custom response
-import { pagiRes } from '../general/responseModel';
+import { PagiRes } from '../general/responseModel';
 import { PaginationRes } from '../dto/index.dto';
 
 @Injectable()
@@ -71,21 +71,27 @@ export class UsersService {
   // TÌM KIẾM danh sách người dùng bằng hoTen và phân trang
   async getUsersPagination(
     tuKhoa: string,
-    soTrang: number,
-    soPhanTuTrenTrang: number,
+    currentPage: number,
+    itemsPerPage: number,
   ): Promise<PaginationRes<NguoiDungDto>> {
-    const [userList, totalCount] = await Promise.all([
+    const [userList, totalItems] = await Promise.all([
       prisma.nguoiDung.findMany({
         where: { hoTen: { contains: tuKhoa } },
-        skip: (soTrang - 1) * soPhanTuTrenTrang,
-        take: soPhanTuTrenTrang,
+        skip: (currentPage - 1) * itemsPerPage,
+        take: itemsPerPage,
         select: nguoiDungSelectNoPass,
       }),
       prisma.nguoiDung.count({
         where: { hoTen: { contains: tuKhoa } },
       }),
     ]);
-    return pagiRes(soTrang, soPhanTuTrenTrang, totalCount, userList);
+
+    return new PagiRes<NguoiDungDto>({
+      currentPage,
+      itemsPerPage,
+      totalItems,
+      items: userList,
+    }).res();
   }
 
   // LẤY thông tin người dùng bằng ID

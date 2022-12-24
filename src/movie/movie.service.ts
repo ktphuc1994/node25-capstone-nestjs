@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -14,16 +15,19 @@ import { BannerDto, MovieDto } from './movie-dto/movie.dto';
 import { PaginationMovieQuery, PaginationRes } from '../dto/index.dto';
 
 // custom response
-import { pagiRes } from '../general/responseModel';
+import { PagiRes } from '../general/responseModel';
+import { getFileUrl } from '../utils/utils';
 
 @Injectable()
 export class MovieService {
   constructor(private readonly configService: ConfigService) {}
 
+  // LẤY Danh sách Banner
   async getBanner(): Promise<BannerDto[]> {
     return await prisma.banner.findMany({ select: bannerSelect });
   }
 
+  // LẤY Danh sách Phim theo Tên
   async getMovieList(tenPhim: string): Promise<MovieDto[]> {
     return await prisma.phim.findMany({
       where: { tenPhim: { contains: tenPhim } },
@@ -31,19 +35,44 @@ export class MovieService {
     });
   }
 
+  // LẤY Danh sách phim theo tên Phim, theo ngày Công Chiêu & Phân trang
   async getMoviePagination(
     query: PaginationMovieQuery,
   ): Promise<PaginationRes<MovieDto>> {
-    const { tenPhim, soTrang, soPhanTuTrenTrang } = query;
-    const [movieList, totalCount] = await Promise.all([
+    const { tenPhim, currentPage, itemsPerPage, fromDate, toDate } = query;
+
+    const [movieList, totalItems] = await Promise.all([
       prisma.phim.findMany({
-        where: { tenPhim: { contains: tenPhim } },
-        skip: (soTrang - 1) * soPhanTuTrenTrang,
-        take: soPhanTuTrenTrang,
+        where: {
+          tenPhim: { contains: tenPhim },
+          ngayKhoiChieu: { gte: fromDate, lte: toDate },
+        },
+        skip: (currentPage - 1) * itemsPerPage,
+        take: itemsPerPage,
         select: phimSelect,
       }),
       prisma.phim.count({ where: { tenPhim: { contains: tenPhim } } }),
     ]);
-    return pagiRes(soTrang, soPhanTuTrenTrang, totalCount, movieList);
+
+    return new PagiRes<MovieDto>({
+      currentPage,
+      itemsPerPage,
+      totalItems,
+      items: movieList,
+    }).res();
+  }
+
+  // UPLOAD Hình Phim
+  async uploadImage(req: Request, maPhim: number, filename: string) {
+    await prisma.phim.update({
+      data: { hinhAnh: filename },
+      where: { maPhim },
+    });
+    const fileUrl = getFileUrl(
+      req,
+      this.configService.get('MOVIE_URL'),
+      filename,
+    );
+    return { fileUrl };
   }
 }

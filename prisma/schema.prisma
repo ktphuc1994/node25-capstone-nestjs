@@ -16,7 +16,7 @@ model Phim {
   trailer       String      @map("trailer") @db.VarChar(255)
   hinhAnh       String      @map("hinh_anh") @db.Text
   moTa          String      @map("mo_ta") @db.Text
-  ngayKhoiChieu DateTime?   @map("ngay_khoi_chieu") @db.Date
+  ngayKhoiChieu String?     @map("ngay_khoi_chieu") @db.VarChar(50)
   danhGia       Int?        @map("danh_gia")
   hot           Boolean?
   dangChieu     Boolean     @map("dang_chieu")
@@ -96,7 +96,7 @@ model LichChieu {
   maLichChieu  Int      @id @default(autoincrement()) @map("ma_lich_chieu")
   maRap        Int?     @map("ma_rap")
   maPhim       Int?     @map("ma_phim")
-  ngayGioChieu DateTime @map("ngay_gio_chieu") @db.Date
+  ngayGioChieu String   @map("ngay_gio_chieu") @db.VarChar(50)
   isRemoved    Boolean  @default(false) @map("is_removed")
   rapPhim      RapPhim? @relation(fields: [maRap], references: [maRap], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_1")
   phim         Phim?    @relation(fields: [maPhim], references: [maPhim], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_2s")
