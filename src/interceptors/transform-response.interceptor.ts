@@ -8,8 +8,8 @@ import { map, Observable } from 'rxjs';
 
 export interface Response<T> {
   message: string;
-  content: T;
   dateTime: string;
+  content: T;
 }
 
 @Injectable()
@@ -35,8 +35,8 @@ export class TransformResponseInterceptor<T>
         // data.isRemoved = undefined;
         return {
           message: 'Success',
-          content: data,
           dateTime: new Date().toISOString(),
+          content: data,
         };
       }),
     );

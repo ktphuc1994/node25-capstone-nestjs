@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 // import prisma
 import { NguoiDung, PrismaClient, Prisma } from '@prisma/client';
-import { userSelectNoPass } from '../../prisma/prisma-select';
+import { nguoiDungSelectNoPass } from '../../prisma/prisma-select';
 const prisma = new PrismaClient();
 
 // import bcrypt
@@ -17,6 +17,10 @@ import {
   UpdateNguoiDungDto,
   UpdateNguoiDungDtoAdmin,
 } from './user-dto/user.dto';
+
+// custom response
+import { pagiRes } from '../general/responseModel';
+import { PaginationRes } from '../dto/index.dto';
 
 @Injectable()
 export class UsersService {
@@ -52,7 +56,7 @@ export class UsersService {
   async getUserList(): Promise<NguoiDungDto[]> {
     return await prisma.nguoiDung.findMany({
       where: { isRemoved: false },
-      select: userSelectNoPass,
+      select: nguoiDungSelectNoPass,
     });
   }
 
@@ -60,7 +64,7 @@ export class UsersService {
   async getUsersByName(tuKhoa: string): Promise<NguoiDungDto[]> {
     return await prisma.nguoiDung.findMany({
       where: { hoTen: { contains: tuKhoa }, isRemoved: false },
-      select: userSelectNoPass,
+      select: nguoiDungSelectNoPass,
     });
   }
 
@@ -69,20 +73,26 @@ export class UsersService {
     tuKhoa: string,
     soTrang: number,
     soPhanTuTrenTrang: number,
-  ): Promise<NguoiDungDto[]> {
-    return await prisma.nguoiDung.findMany({
-      where: { hoTen: { contains: tuKhoa } },
-      skip: (soTrang - 1) * soPhanTuTrenTrang,
-      take: soPhanTuTrenTrang,
-      select: userSelectNoPass,
-    });
+  ): Promise<PaginationRes<NguoiDungDto>> {
+    const [userList, totalCount] = await Promise.all([
+      prisma.nguoiDung.findMany({
+        where: { hoTen: { contains: tuKhoa } },
+        skip: (soTrang - 1) * soPhanTuTrenTrang,
+        take: soPhanTuTrenTrang,
+        select: nguoiDungSelectNoPass,
+      }),
+      prisma.nguoiDung.count({
+        where: { hoTen: { contains: tuKhoa } },
+      }),
+    ]);
+    return pagiRes(soTrang, soPhanTuTrenTrang, totalCount, userList);
   }
 
   // LẤY thông tin người dùng bằng ID
   async getUserInfoById(taiKhoan: number): Promise<NguoiDungDto | null> {
     return await prisma.nguoiDung.findFirst({
       where: { taiKhoan, isRemoved: false },
-      select: userSelectNoPass,
+      select: nguoiDungSelectNoPass,
     });
   }
 

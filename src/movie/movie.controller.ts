@@ -18,8 +18,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // import local Type
-import { PaginationQuery, RequestWithUser } from '../dto/common.dto';
-import { BannerDto } from './movie-dto/movie.dto';
+import {
+  PaginationMovieQuery,
+  PaginationQuery,
+  PaginationRes,
+  RequestWithUser,
+} from '../dto/common.dto';
+import { BannerDto, MovieDto } from './movie-dto/movie.dto';
 
 // import local service
 import { MovieService } from './movie.service';
@@ -36,5 +41,20 @@ export class MovieController {
   @Get('LayDanhSachBanner')
   async getBanner(): Promise<BannerDto[]> {
     return await this.movieService.getBanner();
+  }
+
+  @ApiQuery({ name: 'tenPhim', required: false })
+  @Get('LayDanhSachPhim')
+  async getMovieList(
+    @Query('tenPhim', new DefaultValuePipe('')) tenPhim: string,
+  ): Promise<MovieDto[]> {
+    return await this.movieService.getMovieList(tenPhim);
+  }
+
+  @Get('LayDanhSachPhimPhanTrang')
+  async getMoviePagination(
+    @Query() query: PaginationMovieQuery,
+  ): Promise<PaginationRes<MovieDto>> {
+    return await this.movieService.getMoviePagination(query);
   }
 }

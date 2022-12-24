@@ -18,7 +18,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // import local Type
-import { PaginationQuery, RequestWithUser } from '../dto/common.dto';
+import {
+  PaginationQuery,
+  PaginationRes,
+  RequestWithUser,
+} from '../dto/common.dto';
 import {
   CreateNguoiDungDtoAdmin,
   LoaiNguoiDung,
@@ -61,7 +65,7 @@ export class UsersController {
   async getUsersPagination(
     @Query()
     { tuKhoa, soTrang, soPhanTuTrenTrang }: PaginationQuery,
-  ): Promise<NguoiDungDto[]> {
+  ): Promise<PaginationRes<NguoiDungDto>> {
     return this.usersService.getUsersPagination(
       tuKhoa,
       soTrang,

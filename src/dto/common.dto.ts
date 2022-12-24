@@ -24,6 +24,30 @@ export class PaginationQuery {
   soPhanTuTrenTrang: number = 10;
 }
 
+export class PaginationMovieQuery {
+  @IsString()
+  @ApiPropertyOptional()
+  tenPhim: string = '';
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiPropertyOptional()
+  soTrang: number = 1;
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiPropertyOptional()
+  soPhanTuTrenTrang: number = 10;
+}
+
+export class PaginationRes<T> {
+  currentPage: number;
+  itemPerPage: number;
+  totalPages: number;
+  totalItems: number;
+  items: Array<T>;
+}
+
 export interface ResSuccess<T> {
   message: string;
   content: T;

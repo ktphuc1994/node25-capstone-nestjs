@@ -16,9 +16,9 @@ model Phim {
   trailer       String      @map("trailer") @db.VarChar(255)
   hinhAnh       String      @map("hinh_anh") @db.Text
   moTa          String      @map("mo_ta") @db.Text
-  ngayKhoiChieu DateTime    @map("ngay_khoi_chieu") @db.Date
-  danhGia       Int         @map("danh_gia")
-  hot           Boolean
+  ngayKhoiChieu DateTime?   @map("ngay_khoi_chieu") @db.Date
+  danhGia       Int?        @map("danh_gia")
+  hot           Boolean?
   dangChieu     Boolean     @map("dang_chieu")
   sapChieu      Boolean     @map("sap_chieu")
   isRemoved     Boolean     @default(false) @map("is_removed")
