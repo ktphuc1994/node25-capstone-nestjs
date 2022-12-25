@@ -88,11 +88,7 @@ export class UsersController {
     if (user) {
       return user;
     }
-    throw new NotFoundException({
-      statusCode: HttpStatus.NOT_FOUND,
-      message: 'User does not exist',
-      error: 'Not Found',
-    });
+    throw new NotFoundException('User does not exist');
   }
 
   @Post('ThemNguoiDung')

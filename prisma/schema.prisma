@@ -57,7 +57,7 @@ model CumRap {
 }
 
 model RapPhim {
-  maRap     Int         @id @map("ma_rap")
+  maRap     Int         @id @default(autoincrement()) @map("ma_rap")
   tenRap    String      @map("ten_rap") @db.VarChar(255)
   maCumRap  String      @map("ma_cum_rap")
   isRemoved Boolean     @default(false) @map("is_removed")

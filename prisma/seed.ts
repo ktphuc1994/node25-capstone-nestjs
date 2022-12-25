@@ -42,7 +42,7 @@ const main = async () => {
     const banner = await prisma.banner.create({
       data: b,
     });
-    console.log(`Created Banner with name: ${banner.maBanner}`);
+    console.log(`Created Banner with id: ${banner.maBanner}`);
   }
 
   for (const lc of lichChieuList) {
@@ -50,7 +50,7 @@ const main = async () => {
     const lichChieu = await prisma.lichChieu.create({
       data: { ...lc, ngayGioChieu: date.toISOString() },
     });
-    console.log(`Created Lich Chieu with name: ${lichChieu.maLichChieu}`);
+    console.log(`Created Lich Chieu with id: ${lichChieu.maLichChieu}`);
   }
 
   console.log(`Seeding finished.`);

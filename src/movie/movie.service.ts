@@ -3,7 +3,7 @@ import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // import prisma
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { bannerSelect, phimSelect } from '../../prisma/prisma-select';
 const prisma = new PrismaClient();
 
@@ -11,7 +11,12 @@ const prisma = new PrismaClient();
 import * as bcrypt from 'bcrypt';
 
 // import local DTO
-import { BannerDto, MovieDto } from './movie-dto/movie.dto';
+import {
+  BannerDto,
+  CreateMovieDto,
+  MovieDto,
+  UpdateMovieDto,
+} from './movie-dto/movie.dto';
 import { PaginationMovieQuery, PaginationRes } from '../dto/index.dto';
 
 // custom response
@@ -25,6 +30,17 @@ export class MovieService {
   // LẤY Danh sách Banner
   async getBanner(): Promise<BannerDto[]> {
     return await prisma.banner.findMany({ select: bannerSelect });
+  }
+
+  // LẤY Thông tin Phim
+  async getMovieInfo(maPhim: number): Promise<MovieDto> {
+    const movieInfo = await prisma.phim.findFirst({
+      where: { maPhim },
+      select: phimSelect,
+    });
+
+    if (!movieInfo) throw new NotFoundException('Movie is not found.');
+    return movieInfo;
   }
 
   // LẤY Danh sách Phim theo Tên
@@ -74,5 +90,24 @@ export class MovieService {
       filename,
     );
     return { fileUrl };
+  }
+
+  // THÊM Phim mới
+  async createMovie(movieInfo: CreateMovieDto): Promise<MovieDto> {
+    return await prisma.phim.create({ data: movieInfo, select: phimSelect });
+  }
+
+  // CẬP NHẬT Phim
+  async updateMovie(updateInfo: UpdateMovieDto): Promise<MovieDto> {
+    return await prisma.phim.update({
+      where: { maPhim: updateInfo.maPhim },
+      data: updateInfo,
+      select: phimSelect,
+    });
+  }
+
+  // XÓA Phim
+  async deleteMovie(maPhim: number): Promise<MovieDto> {
+    return await prisma.phim.delete({ where: { maPhim }, select: phimSelect });
   }
 }

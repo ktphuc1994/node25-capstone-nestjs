@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { Request } from 'express';
 import {
   Controller,
@@ -19,6 +20,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  PayloadTooLargeException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -36,8 +38,13 @@ import { diskStorage } from 'multer';
 
 // import local Type
 import { PaginationMovieQuery, PaginationRes } from '../dto/common.dto';
-import { BannerDto, MovieDto } from './movie-dto/movie.dto';
-import { FileUploadDto, InterfaceUploadFile } from '../dto/upload.dto';
+import {
+  BannerDto,
+  CreateMovieDto,
+  MovieDto,
+  UpdateMovieDto,
+} from './movie-dto/movie.dto';
+import { FileUploadDto } from '../dto/upload.dto';
 
 // import local service
 import { MovieService } from './movie.service';
@@ -56,6 +63,11 @@ export class MovieController {
   @Get('LayDanhSachBanner')
   async getBanner(): Promise<BannerDto[]> {
     return await this.movieService.getBanner();
+  }
+
+  @Get('LayThongTinPhim/:maPhim')
+  async getMovieInfo(@Param('maPhim') maPhim: number): Promise<MovieDto> {
+    return await this.movieService.getMovieInfo(maPhim);
   }
 
   @Get('LayDanhSachPhim')
@@ -100,6 +112,34 @@ export class MovieController {
     )
     file: Express.Multer.File,
   ) {
+    const fileLimit = Number(this.configService.get('MOVIE_FILE_LIMIT'));
+    if (file.size > fileLimit * 1024 * 1024) {
+      fs.unlinkSync(
+        process.cwd() +
+          '/' +
+          this.configService.get('MOVIE_URL') +
+          '/' +
+          file.filename,
+      );
+      throw new PayloadTooLargeException(
+        `File can not be larger than ${fileLimit} MB(s)`,
+      );
+    }
     return this.movieService.uploadImage(req, maPhim, file.filename);
+  }
+
+  @Post('ThemPhim')
+  async createMovie(@Body() movieInfo: CreateMovieDto): Promise<MovieDto> {
+    return await this.movieService.createMovie(movieInfo);
+  }
+
+  @Put('CapNhatPhim')
+  async updateMovie(@Body() updateInfo: UpdateMovieDto): Promise<MovieDto> {
+    return await this.movieService.updateMovie(updateInfo);
+  }
+
+  @Delete('XoaPhim/:maPhim')
+  async deleteMovie(@Param('maPhim') maPhim: number): Promise<MovieDto> {
+    return await this.movieService.deleteMovie(maPhim);
   }
 }

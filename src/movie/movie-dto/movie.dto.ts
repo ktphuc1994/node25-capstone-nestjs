@@ -1,17 +1,27 @@
-import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
 
 // import prisma class
 import { Banner, Phim } from '@prisma/client';
 
 // import validator and transform
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
+  Max,
+  Min,
 } from 'class-validator';
+import { Opposite } from '../../decorator/opposite.decorator';
 
 export class MovieEntity implements Phim {
   @IsNumber()
@@ -39,24 +49,29 @@ export class MovieEntity implements Phim {
   moTa: string;
 
   @IsDateString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiPropertyOptional()
   ngayKhoiChieu: string;
 
-  @IsNumber()
+  @IsInt()
+  @Min(0)
+  @Max(10)
+  @IsOptional()
   @ApiPropertyOptional()
   danhGia: number;
 
   @IsBoolean()
+  @IsOptional()
   @ApiPropertyOptional()
   hot: boolean;
 
   @IsBoolean()
-  @ApiProperty()
+  @ApiProperty({ default: false })
   dangChieu: boolean;
 
   @IsBoolean()
-  @ApiProperty()
+  @ApiProperty({ default: true })
+  @Opposite(MovieEntity, (s) => s.dangChieu)
   sapChieu: boolean;
 
   @Exclude()
@@ -85,3 +100,12 @@ export class BannerEntity implements Banner {
 export class BannerDto extends OmitType(BannerEntity, ['isRemoved']) {}
 
 export class MovieDto extends OmitType(MovieEntity, ['isRemoved']) {}
+export class CreateMovieDto extends OmitType(MovieEntity, [
+  'isRemoved',
+  'maPhim',
+]) {}
+export class UpdateMovieDto extends PartialType(CreateMovieDto) {
+  @IsNumber()
+  @ApiProperty()
+  maPhim: number;
+}
