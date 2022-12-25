@@ -9,17 +9,12 @@ import {
   Put,
   Param,
   Query,
-  ParseIntPipe,
   DefaultValuePipe,
   UseGuards,
-  NotFoundException,
-  HttpStatus,
   Delete,
   UseInterceptors,
   UploadedFile,
   ParseFilePipe,
-  MaxFileSizeValidator,
-  FileTypeValidator,
   PayloadTooLargeException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -51,7 +46,7 @@ import { MovieService } from './movie.service';
 import { AuthService } from '../auth/auth.service';
 import { uploadFileFilter } from '../filter/upload-file.filter';
 
-@ApiTags('Quản lí Phim')
+@ApiTags('Quản lý phim')
 @Controller('QuanLyPhim')
 export class MovieController {
   constructor(

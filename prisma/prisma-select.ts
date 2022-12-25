@@ -24,3 +24,30 @@ export const phimSelect = {
   dangChieu: true,
   sapChieu: true,
 };
+
+export const theatreChainSelect = {
+  maHeThongRap: true,
+  tenHeThongRap: true,
+  logo: true,
+};
+
+export const theatreSelect = {
+  maCumRap: true,
+  tenCumRap: true,
+  diaChi: true,
+  maHeThongRap: true,
+};
+
+export const theatreRoomSelect = {
+  maRap: true,
+  tenRap: true,
+  maCumRap: true,
+};
+
+export const seatSelect = {
+  maGhe: true,
+  tenGhe: true,
+  loaiGhe: true,
+  maRap: true,
+  giaVe: true,
+};

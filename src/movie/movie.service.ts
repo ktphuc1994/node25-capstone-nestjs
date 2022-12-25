@@ -1,14 +1,11 @@
 import { Request } from 'express';
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // import prisma
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { bannerSelect, phimSelect } from '../../prisma/prisma-select';
 const prisma = new PrismaClient();
-
-// import bcrypt
-import * as bcrypt from 'bcrypt';
 
 // import local DTO
 import {
