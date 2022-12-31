@@ -16,6 +16,7 @@ import {
   UploadedFile,
   ParseFilePipe,
   PayloadTooLargeException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -61,7 +62,9 @@ export class MovieController {
   }
 
   @Get('LayThongTinPhim/:maPhim')
-  async getMovieInfo(@Param('maPhim') maPhim: number): Promise<MovieDto> {
+  async getMovieInfo(
+    @Param('maPhim', ParseIntPipe) maPhim: number,
+  ): Promise<MovieDto> {
     return await this.movieService.getMovieInfo(maPhim);
   }
 
@@ -98,7 +101,7 @@ export class MovieController {
     }),
   )
   uploadImage(
-    @Param('maPhim') maPhim: number,
+    @Param('maPhim', ParseIntPipe) maPhim: number,
     @Req() req: Request,
     @UploadedFile(
       new ParseFilePipe({
@@ -134,7 +137,9 @@ export class MovieController {
   }
 
   @Delete('XoaPhim/:maPhim')
-  async deleteMovie(@Param('maPhim') maPhim: number): Promise<MovieDto> {
+  async deleteMovie(
+    @Param('maPhim', ParseIntPipe) maPhim: number,
+  ): Promise<MovieDto> {
     return await this.movieService.deleteMovie(maPhim);
   }
 }

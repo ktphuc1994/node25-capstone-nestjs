@@ -1,11 +1,23 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 
 // import prisma
-import { CumRap, Ghe, HeThongRap, RapPhim } from '@prisma/client';
+import {
+  CumRap,
+  DatVe,
+  Ghe,
+  HeThongRap,
+  LichChieu,
+  RapPhim,
+} from '@prisma/client';
+
+// import local DTO
+import { MovieDto } from '../../movie/movie-dto/movie.dto';
+import { NguoiDungDto } from '../../users/user-dto/user.dto';
 
 // import validator and transformer
 import {
   IsBoolean,
+  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -80,12 +92,50 @@ export class TheatreRoomEntity implements RapPhim {
 
   @IsOptional()
   @ApiPropertyOptional()
-  ghe?: seatDto[];
+  ghe?: SeatDto[];
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  lichChieu?: ScheduleDto[];
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   maCumRap: string;
+
+  @Exclude()
+  @IsBoolean()
+  isRemoved: boolean;
+}
+export class TheatreRoomDto extends OmitType(TheatreRoomEntity, [
+  'isRemoved',
+]) {}
+
+export class ScheduleEntity implements LichChieu {
+  @IsNumber()
+  @ApiProperty()
+  maLichChieu: number;
+
+  @IsNumber()
+  @ApiProperty()
+  maRap: number;
+
+  @IsNumber()
+  @ApiProperty()
+  maPhim: number;
+
+  @IsDateString()
+  @IsNotEmpty()
+  @ApiProperty()
+  ngayGioChieu: string;
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  rapPhim?: TheatreRoomDto;
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  phim?: MovieDto;
 
   @Exclude()
   @IsBoolean()
@@ -126,8 +176,45 @@ export class TheatreChainDto extends OmitType(TheatreChainEntity, [
 
 export class TheatreDto extends OmitType(TheatreEntity, ['isRemoved']) {}
 
-export class TheatreRoomDto extends OmitType(TheatreRoomEntity, [
-  'isRemoved',
-]) {}
+export class ScheduleDto extends OmitType(ScheduleEntity, ['isRemoved']) {}
 
-export class seatDto extends OmitType(SeatEntity, ['isRemoved']) {}
+export class SeatDto extends OmitType(SeatEntity, ['isRemoved']) {}
+
+export class lichChieuCumRapOldDto {
+  maCumRap: string;
+  tenCumRap: string;
+  diaChi: string;
+  rapPhim: {
+    maRap: number;
+    tenRap: string;
+    lichChieu: {
+      maRap: number;
+      maLichChieu: number;
+      maPhim: number;
+      ngayGioChieu: string;
+    }[];
+  }[];
+}
+export class lichChieuCumRapNewDto {
+  maCumRap: string;
+  tenCumRap: string;
+  diaChi: string;
+  lichChieuPhim: {
+    maLichChieu: number;
+    maRap: number;
+    tenRap: string;
+    ngayGioChieu: string;
+  }[];
+}
+export class lichChieuPhimOldDto {
+  maHeThongRap: string;
+  tenHeThongRap: string;
+  logo: string;
+  cumRap: Array<lichChieuCumRapOldDto>;
+}
+export class lichChieuPhimNewDto {
+  maHeThongRap: string;
+  tenHeThongRap: string;
+  logo: string;
+  cumRap: Array<lichChieuCumRapNewDto>;
+}

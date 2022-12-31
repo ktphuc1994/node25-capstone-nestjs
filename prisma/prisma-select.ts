@@ -51,3 +51,16 @@ export const seatSelect = {
   maRap: true,
   giaVe: true,
 };
+
+export const lichChieuSelect = {
+  maLichChieu: true,
+  maRap: true,
+  maPhim: true,
+  ngayGioChieu: true,
+};
+
+export const bookingSelect = {
+  taiKhoan: true,
+  maLichChieu: true,
+  maGhe: true,
+};

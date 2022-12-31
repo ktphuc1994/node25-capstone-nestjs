@@ -72,8 +72,8 @@ model Ghe {
   maGhe     Int      @id @default(autoincrement()) @map("ma_ghe")
   tenGhe    String   @map("ten_ghe") @db.VarChar(3)
   loaiGhe   String   @map("loai_ghe") @db.VarChar(10)
-  maRap     Int?     @map("ma_rap")
   giaVe     Int      @map("gia_ve")
+  maRap     Int?     @map("ma_rap")
   isRemoved Boolean  @default(false) @map("is_removed")
   rapPhim   RapPhim? @relation(fields: [maRap], references: [maRap], onDelete: Cascade, onUpdate: SetNull, map: "Ghe_ibfk_1")
   datVe     DatVe[]

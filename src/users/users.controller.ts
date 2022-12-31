@@ -82,7 +82,7 @@ export class UsersController {
 
   @Get('LayThongTinNguoiDung/:taiKhoan')
   async getUserInfoById(
-    @Param('taiKhoan') tai_khoan: number,
+    @Param('taiKhoan', ParseIntPipe) tai_khoan: number,
   ): Promise<NguoiDungDto> {
     const user = await this.usersService.getUserInfoById(tai_khoan);
     if (user) {
