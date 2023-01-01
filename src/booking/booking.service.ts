@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,12 +8,13 @@ import {
 // import prisma
 import { PrismaClient } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { seatSelect } from '../../prisma/prisma-select';
+import { lichChieuSelect, seatSelect } from '../../prisma/prisma-select';
 import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
 const prisma = new PrismaClient();
 
 // import local DTO
 import { CreateManyBookingDto } from './booking-dto/booking.dto';
+import { CreateScheduleDto } from '../theatre/theatre-dto/theatre.dto';
 
 @Injectable()
 export class BookingService {
@@ -118,5 +118,13 @@ export class BookingService {
     };
 
     return scheduleFullInfo;
+  }
+
+  // POST Tạo lịch chiếu
+  async createSchedule(scheduleInfo: CreateScheduleDto) {
+    return await prisma.lichChieu.create({
+      data: scheduleInfo,
+      select: lichChieuSelect,
+    });
   }
 }

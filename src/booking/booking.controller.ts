@@ -13,6 +13,7 @@ import { BookingService } from './booking.service';
 
 // import local DTO
 import { CreateManyBookingDto } from './booking-dto/booking.dto';
+import { CreateScheduleDto } from '../theatre/theatre-dto/theatre.dto';
 
 @ApiTags('Quản lý đặt vé')
 @Controller('QuanLyDatVe')
@@ -32,5 +33,7 @@ export class BookingController {
   }
 
   @Post('TaoLichChieu')
-  async createSchedule() {}
+  async createSchedule(@Body() scheduleInfo: CreateScheduleDto) {
+    return await this.bookingService.createSchedule(scheduleInfo);
+  }
 }

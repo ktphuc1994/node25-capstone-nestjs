@@ -1,14 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 
 // import prisma
-import {
-  CumRap,
-  DatVe,
-  Ghe,
-  HeThongRap,
-  LichChieu,
-  RapPhim,
-} from '@prisma/client';
+import { CumRap, Ghe, HeThongRap, LichChieu, RapPhim } from '@prisma/client';
 
 // import local DTO
 import { MovieDto } from '../../movie/movie-dto/movie.dto';
@@ -19,7 +12,7 @@ import {
   IsBoolean,
   IsDateString,
   IsNotEmpty,
-  IsNumber,
+  IsInt,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -81,7 +74,8 @@ export class TheatreEntity implements CumRap {
 }
 
 export class TheatreRoomEntity implements RapPhim {
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maRap: number;
 
@@ -112,15 +106,18 @@ export class TheatreRoomDto extends OmitType(TheatreRoomEntity, [
 ]) {}
 
 export class ScheduleEntity implements LichChieu {
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maLichChieu: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maRap: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maPhim: number;
 
@@ -143,7 +140,8 @@ export class ScheduleEntity implements LichChieu {
 }
 
 export class SeatEntity implements Ghe {
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maGhe: number;
 
@@ -157,11 +155,13 @@ export class SeatEntity implements Ghe {
   @ApiProperty()
   loaiGhe: string;
 
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maRap: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   giaVe: number;
 
@@ -177,6 +177,12 @@ export class TheatreChainDto extends OmitType(TheatreChainEntity, [
 export class TheatreDto extends OmitType(TheatreEntity, ['isRemoved']) {}
 
 export class ScheduleDto extends OmitType(ScheduleEntity, ['isRemoved']) {}
+export class CreateScheduleDto extends OmitType(ScheduleEntity, [
+  'maLichChieu',
+  'rapPhim',
+  'phim',
+  'isRemoved',
+]) {}
 
 export class SeatDto extends OmitType(SeatEntity, ['isRemoved']) {}
 

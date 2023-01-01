@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger';
 
 // import prisma model
-import { DatVe } from '@prisma/client';
+import { DatVe, LichChieu } from '@prisma/client';
 
 // import validator
 import { Exclude, Type } from 'class-transformer';
@@ -78,28 +78,3 @@ export class CreateManyBookingDto extends PickType(BookingEntity, [
   @ApiProperty({ type: [UserSeatDto] })
   danhSachVe: UserSeatDto[];
 }
-
-// export class UserSeatDto {
-//   @IsInt()
-//   @IsNotEmpty()
-//   @ApiProperty()
-//   taiKhoan: number;
-
-//   @IsInt()
-//   @IsNotEmpty()
-//   @ApiProperty()
-//   maGhe: number;
-// }
-
-// export class CreateManyBookingDto {
-//   @IsInt()
-//   @IsNotEmpty()
-//   @ApiProperty()
-//   maLichChieu: number;
-
-//   @ValidateNested()
-//   @IsObject()
-//   @Type(() => UserSeatDto)
-//   @ApiProperty()
-//   danhSachVe: UserSeatDto;
-// }
