@@ -9,13 +9,12 @@ import {
 import { Banner, Phim } from '@prisma/client';
 
 // import validator and transform
-import { Exclude, Transform, Type } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -24,7 +23,8 @@ import {
 import { Opposite } from '../../decorator/opposite.decorator';
 
 export class MovieEntity implements Phim {
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maPhim: number;
 
@@ -80,11 +80,13 @@ export class MovieEntity implements Phim {
 }
 
 export class BannerEntity implements Banner {
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maBanner: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maPhim: number;
 
@@ -105,7 +107,8 @@ export class CreateMovieDto extends OmitType(MovieEntity, [
   'maPhim',
 ]) {}
 export class UpdateMovieDto extends PartialType(CreateMovieDto) {
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maPhim: number;
 }

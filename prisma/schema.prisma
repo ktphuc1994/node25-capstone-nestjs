@@ -106,14 +106,14 @@ model LichChieu {
 }
 
 model DatVe {
-  taiKhoan    Int       @map("tai_khoan")
-  maLichChieu Int       @map("ma_lich_chieu")
-  maGhe       Int       @map("ma_ghe")
-  isRemoved   Boolean   @default(false) @map("is_removed")
-  nguoiDung   NguoiDung @relation(fields: [taiKhoan], references: [taiKhoan], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_1")
-  lichChieu   LichChieu @relation(fields: [maLichChieu], references: [maLichChieu], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_2")
-  ghe         Ghe       @relation(fields: [maGhe], references: [maGhe], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_3")
+  taiKhoan    Int?       @map("tai_khoan")
+  maLichChieu Int        @map("ma_lich_chieu")
+  maGhe       Int        @map("ma_ghe")
+  isRemoved   Boolean    @default(false) @map("is_removed")
+  nguoiDung   NguoiDung? @relation(fields: [taiKhoan], references: [taiKhoan], onDelete: SetNull, onUpdate: Restrict, map: "DatVe_ibfk_1")
+  lichChieu   LichChieu  @relation(fields: [maLichChieu], references: [maLichChieu], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_2")
+  ghe         Ghe        @relation(fields: [maGhe], references: [maGhe], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_3")
 
-  @@id([taiKhoan, maLichChieu, maGhe])
-  @@index([taiKhoan, maLichChieu, maGhe], map: "DatVe_indexes")
+  @@id([maLichChieu, maGhe])
+  @@index([maLichChieu, maGhe], map: "DatVe_indexes")
 }

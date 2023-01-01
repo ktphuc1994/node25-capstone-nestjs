@@ -14,7 +14,8 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsBoolean,
-  IsNumber,
+  IsInt,
+  IsNotEmpty,
   IsOptional,
   ValidateNested,
 } from 'class-validator';
@@ -24,15 +25,18 @@ import { NguoiDungDto } from '../../dto/index.dto';
 import { ScheduleDto, SeatDto } from '../../theatre/theatre-dto/theatre.dto';
 
 export class BookingEntity implements DatVe {
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   taiKhoan: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maLichChieu: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   @ApiProperty()
   maGhe: number;
 
@@ -74,3 +78,28 @@ export class CreateManyBookingDto extends PickType(BookingEntity, [
   @ApiProperty({ type: [UserSeatDto] })
   danhSachVe: UserSeatDto[];
 }
+
+// export class UserSeatDto {
+//   @IsInt()
+//   @IsNotEmpty()
+//   @ApiProperty()
+//   taiKhoan: number;
+
+//   @IsInt()
+//   @IsNotEmpty()
+//   @ApiProperty()
+//   maGhe: number;
+// }
+
+// export class CreateManyBookingDto {
+//   @IsInt()
+//   @IsNotEmpty()
+//   @ApiProperty()
+//   maLichChieu: number;
+
+//   @ValidateNested()
+//   @IsObject()
+//   @Type(() => UserSeatDto)
+//   @ApiProperty()
+//   danhSachVe: UserSeatDto;
+// }

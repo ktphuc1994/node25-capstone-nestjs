@@ -23,12 +23,22 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
             "The provided value for the column is too long for the column's type",
           error: exception.meta ? exception.meta : exception.code,
         });
+        break;
       }
       case prismaErrorCodes.unique: {
         const status = HttpStatus.CONFLICT;
         res.status(status).json({
           statusCode: status,
           message: 'Unique constraint failed',
+          error: exception.meta ? exception.meta : exception.code,
+        });
+        break;
+      }
+      case prismaErrorCodes.foreignKey: {
+        const status = HttpStatus.BAD_REQUEST;
+        res.status(status).json({
+          statusCode: status,
+          message: 'Foreign Key failed. Record(s) not found',
           error: exception.meta ? exception.meta : exception.code,
         });
         break;
@@ -40,10 +50,17 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
           message: 'The provided record is not found',
           error: exception.meta ? exception.meta : exception.code,
         });
+        break;
       }
       default:
         // default 500 error code
-        super.catch(exception, host);
+        // super.catch(exception, host);
+        const status = HttpStatus.BAD_REQUEST;
+        res.status(status).json({
+          statusCode: status,
+          message: `Failed when executing request at database. Prisma Error Code: ${exception.code}`,
+          error: exception.meta ? exception.meta : exception.code,
+        });
         break;
     }
   }
