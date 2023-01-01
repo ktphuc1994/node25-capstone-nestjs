@@ -35,8 +35,15 @@ import {
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 
-@ApiTags('Quản lí người dùng')
+// import local decorator
+import { Roles } from '../decorator/roles.decorator';
+import { RolesGuard } from '../strategy/roles.strategy';
+
 @Controller('QuanLyNguoiDung')
+@ApiTags('Quản lí người dùng')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+@Roles(LoaiNguoiDung.ADMIN)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -74,8 +81,7 @@ export class UsersController {
   }
 
   @Get('ThongTinTaiKhoan')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'))
+  @Roles(LoaiNguoiDung.USER)
   getUserInfo(@Req() req: RequestWithUser) {
     return req.user;
   }
@@ -97,8 +103,6 @@ export class UsersController {
   }
 
   @Put('CapNhatThongTinNguoiDung')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'))
   async updateUser(
     @Req() req: RequestWithUser,
     @Body() body: UpdateNguoiDungDto,

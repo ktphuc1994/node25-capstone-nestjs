@@ -7,8 +7,8 @@ import { TheatreService } from './theatre.service';
 // import local DTO
 import { TheatreChainDto } from './theatre-dto/theatre.dto';
 
-@ApiTags('Quản lý rạp')
 @Controller('QuanLyRap')
+@ApiTags('Quản lý rạp')
 export class TheatreController {
   constructor(private readonly theatreService: TheatreService) {}
 
@@ -30,7 +30,7 @@ export class TheatreController {
     return await this.theatreService.getScreenSchedule(maPhim);
   }
 
-  @Get('LayThongTinLichChieuHeThongRap')
+  @Get('LayThongTinLichChieuTheoHeThongRap')
   @ApiQuery({ name: 'maHeThongRap', required: false })
   async getScheduleByChain(@Query('maHeThongRap') maHeThongRap: string) {
     return await this.theatreService.getScheduleByChain(maHeThongRap);

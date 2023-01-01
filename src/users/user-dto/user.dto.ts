@@ -13,7 +13,6 @@ export enum LoaiNguoiDung {
   ADMIN = 'ADMIN',
   MODERATOR = 'MODERATOR',
   USER = 'USER',
-  GUEST = 'GUEST',
 }
 
 @Exclude()

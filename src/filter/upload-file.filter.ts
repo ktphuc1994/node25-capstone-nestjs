@@ -1,7 +1,4 @@
-import {
-  UnsupportedMediaTypeException,
-  PayloadTooLargeException,
-} from '@nestjs/common';
+import { UnsupportedMediaTypeException } from '@nestjs/common';
 import { Request } from 'express';
 
 export function uploadFileFilter(...mimetypes: string[]) {

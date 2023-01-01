@@ -41,18 +41,23 @@ import {
   UpdateMovieDto,
 } from './movie-dto/movie.dto';
 import { FileUploadDto } from '../dto/upload.dto';
+import { LoaiNguoiDung } from '../dto/index.dto';
 
 // import local service
 import { MovieService } from './movie.service';
-import { AuthService } from '../auth/auth.service';
+
+// import local filter
 import { uploadFileFilter } from '../filter/upload-file.filter';
 
-@ApiTags('Quản lý phim')
+// import local guard
+import { Roles } from '../decorator/roles.decorator';
+import { RolesGuard } from '../strategy/roles.strategy';
+
 @Controller('QuanLyPhim')
+@ApiTags('Quản lý phim')
 export class MovieController {
   constructor(
     private readonly movieService: MovieService,
-    private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -89,6 +94,9 @@ export class MovieController {
     description: 'Movie Image',
     type: FileUploadDto,
   })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @Roles(LoaiNguoiDung.ADMIN)
   @UseInterceptors(
     FileInterceptor('movie', {
       fileFilter: uploadFileFilter('jpg', 'jpeg', 'png', 'webp'),
@@ -127,16 +135,25 @@ export class MovieController {
   }
 
   @Post('ThemPhim')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @Roles(LoaiNguoiDung.ADMIN)
   async createMovie(@Body() movieInfo: CreateMovieDto): Promise<MovieDto> {
     return await this.movieService.createMovie(movieInfo);
   }
 
   @Put('CapNhatPhim')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @Roles(LoaiNguoiDung.ADMIN)
   async updateMovie(@Body() updateInfo: UpdateMovieDto): Promise<MovieDto> {
     return await this.movieService.updateMovie(updateInfo);
   }
 
   @Delete('XoaPhim/:maPhim')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @Roles(LoaiNguoiDung.ADMIN)
   async deleteMovie(
     @Param('maPhim', ParseIntPipe) maPhim: number,
   ): Promise<MovieDto> {
