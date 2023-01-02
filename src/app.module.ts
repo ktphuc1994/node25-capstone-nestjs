@@ -16,6 +16,8 @@ import { AppService } from './app.service';
 // import local filter
 import { HttpExceptionFilter } from './filter/http-exceptions.filter';
 import { PrismaClientExceptionFilter } from './filter/prisma-client-exceptions.filter';
+import { TheatreModule } from './theatre/theatre.module';
+import { BookingModule } from './booking/booking.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { PrismaClientExceptionFilter } from './filter/prisma-client-exceptions.f
     AuthModule,
     UsersModule,
     MovieModule,
+    TheatreModule,
+    BookingModule,
   ],
   controllers: [AppController],
   providers: [

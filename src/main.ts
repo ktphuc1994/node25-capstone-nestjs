@@ -3,7 +3,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-// import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
+import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
 // import { TransformToPlainInterceptor } from './interceptors/transform-to-plain.interceptor';
 
 async function bootstrap() {
@@ -12,11 +12,11 @@ async function bootstrap() {
   app.use(express.static('.'));
   app.setGlobalPrefix('api');
 
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-  // app.useGlobalInterceptors(new TransformResponseInterceptor());
-  // app.useGlobalInterceptors(new TransformToPlainInterceptor());
-
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  // app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(new TransformResponseInterceptor());
+  // app.useGlobalInterceptors(new TransformToPlainInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('Node25 - Movie - NestJS')
@@ -24,7 +24,6 @@ async function bootstrap() {
     .addBearerAuth()
     .setVersion('1.0')
     .build();
-
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 

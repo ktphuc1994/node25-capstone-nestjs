@@ -18,7 +18,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // import local Type
-import { PaginationQuery, RequestWithUser } from '../dto/common.dto';
+import {
+  PaginationQuery,
+  PaginationRes,
+  RequestWithUser,
+} from '../dto/common.dto';
 import {
   CreateNguoiDungDtoAdmin,
   LoaiNguoiDung,
@@ -31,8 +35,15 @@ import {
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 
-@ApiTags('Quản lí người dùng')
+// import local decorator
+import { Roles } from '../decorator/roles.decorator';
+import { RolesGuard } from '../strategy/roles.strategy';
+
 @Controller('QuanLyNguoiDung')
+@ApiTags('Quản lí người dùng')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+@Roles(LoaiNguoiDung.ADMIN)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -49,8 +60,8 @@ export class UsersController {
     return await this.usersService.getUserList();
   }
 
-  @ApiQuery({ name: 'tuKhoa', required: false })
   @Get('TimKiemNguoiDung')
+  @ApiQuery({ name: 'tuKhoa', required: false })
   async getUserByName(
     @Query('tuKhoa', new DefaultValuePipe('')) tuKhoa: string,
   ): Promise<NguoiDungDto[]> {
@@ -60,35 +71,30 @@ export class UsersController {
   @Get('TimKiemNguoiDungPhanTrang')
   async getUsersPagination(
     @Query()
-    { tuKhoa, soTrang, soPhanTuTrenTrang }: PaginationQuery,
-  ): Promise<NguoiDungDto[]> {
+    { tuKhoa, currentPage, itemsPerPage }: PaginationQuery,
+  ): Promise<PaginationRes<NguoiDungDto>> {
     return this.usersService.getUsersPagination(
       tuKhoa,
-      soTrang,
-      soPhanTuTrenTrang,
+      currentPage,
+      itemsPerPage,
     );
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'))
   @Get('ThongTinTaiKhoan')
+  @Roles(LoaiNguoiDung.USER)
   getUserInfo(@Req() req: RequestWithUser) {
     return req.user;
   }
 
   @Get('LayThongTinNguoiDung/:taiKhoan')
   async getUserInfoById(
-    @Param('taiKhoan') tai_khoan: number,
+    @Param('taiKhoan', ParseIntPipe) tai_khoan: number,
   ): Promise<NguoiDungDto> {
     const user = await this.usersService.getUserInfoById(tai_khoan);
     if (user) {
       return user;
     }
-    throw new NotFoundException({
-      statusCode: HttpStatus.NOT_FOUND,
-      message: 'User does not exist',
-      error: 'Not Found',
-    });
+    throw new NotFoundException('User does not exist');
   }
 
   @Post('ThemNguoiDung')
@@ -96,8 +102,6 @@ export class UsersController {
     return await this.usersService.addUser(userInfo);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'))
   @Put('CapNhatThongTinNguoiDung')
   async updateUser(
     @Req() req: RequestWithUser,

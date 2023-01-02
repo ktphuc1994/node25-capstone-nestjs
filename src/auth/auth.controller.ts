@@ -24,7 +24,6 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() newUser: CreateNguoiDungDto): Promise<string> {
-    console.log(newUser);
     return this.authService.register(newUser);
   }
 }

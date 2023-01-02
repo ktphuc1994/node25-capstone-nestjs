@@ -16,9 +16,9 @@ model Phim {
   trailer       String      @map("trailer") @db.VarChar(255)
   hinhAnh       String      @map("hinh_anh") @db.Text
   moTa          String      @map("mo_ta") @db.Text
-  ngayKhoiChieu DateTime    @map("ngay_khoi_chieu") @db.Date
-  danhGia       Int         @map("danh_gia")
-  hot           Boolean
+  ngayKhoiChieu String?     @map("ngay_khoi_chieu") @db.VarChar(50)
+  danhGia       Int?        @map("danh_gia")
+  hot           Boolean?
   dangChieu     Boolean     @map("dang_chieu")
   sapChieu      Boolean     @map("sap_chieu")
   isRemoved     Boolean     @default(false) @map("is_removed")
@@ -57,7 +57,7 @@ model CumRap {
 }
 
 model RapPhim {
-  maRap     Int         @id @map("ma_rap")
+  maRap     Int         @id @default(autoincrement()) @map("ma_rap")
   tenRap    String      @map("ten_rap") @db.VarChar(255)
   maCumRap  String      @map("ma_cum_rap")
   isRemoved Boolean     @default(false) @map("is_removed")
@@ -72,8 +72,8 @@ model Ghe {
   maGhe     Int      @id @default(autoincrement()) @map("ma_ghe")
   tenGhe    String   @map("ten_ghe") @db.VarChar(3)
   loaiGhe   String   @map("loai_ghe") @db.VarChar(10)
-  maRap     Int?     @map("ma_rap")
   giaVe     Int      @map("gia_ve")
+  maRap     Int?     @map("ma_rap")
   isRemoved Boolean  @default(false) @map("is_removed")
   rapPhim   RapPhim? @relation(fields: [maRap], references: [maRap], onDelete: Cascade, onUpdate: SetNull, map: "Ghe_ibfk_1")
   datVe     DatVe[]
@@ -96,7 +96,7 @@ model LichChieu {
   maLichChieu  Int      @id @default(autoincrement()) @map("ma_lich_chieu")
   maRap        Int?     @map("ma_rap")
   maPhim       Int?     @map("ma_phim")
-  ngayGioChieu DateTime @map("ngay_gio_chieu") @db.Date
+  ngayGioChieu String   @map("ngay_gio_chieu") @db.VarChar(50)
   isRemoved    Boolean  @default(false) @map("is_removed")
   rapPhim      RapPhim? @relation(fields: [maRap], references: [maRap], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_1")
   phim         Phim?    @relation(fields: [maPhim], references: [maPhim], onDelete: SetNull, onUpdate: SetNull, map: "LichChieu_ibfk_2s")
@@ -106,14 +106,14 @@ model LichChieu {
 }
 
 model DatVe {
-  taiKhoan    Int       @map("tai_khoan")
-  maLichChieu Int       @map("ma_lich_chieu")
-  maGhe       Int       @map("ma_ghe")
-  isRemoved   Boolean   @default(false) @map("is_removed")
-  nguoiDung   NguoiDung @relation(fields: [taiKhoan], references: [taiKhoan], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_1")
-  lichChieu   LichChieu @relation(fields: [maLichChieu], references: [maLichChieu], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_2")
-  ghe         Ghe       @relation(fields: [maGhe], references: [maGhe], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_3")
+  taiKhoan    Int?       @map("tai_khoan")
+  maLichChieu Int        @map("ma_lich_chieu")
+  maGhe       Int        @map("ma_ghe")
+  isRemoved   Boolean    @default(false) @map("is_removed")
+  nguoiDung   NguoiDung? @relation(fields: [taiKhoan], references: [taiKhoan], onDelete: SetNull, onUpdate: Restrict, map: "DatVe_ibfk_1")
+  lichChieu   LichChieu  @relation(fields: [maLichChieu], references: [maLichChieu], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_2")
+  ghe         Ghe        @relation(fields: [maGhe], references: [maGhe], onDelete: Restrict, onUpdate: Restrict, map: "DatVe_ibfk_3")
 
-  @@id([taiKhoan, maLichChieu, maGhe])
-  @@index([taiKhoan, maLichChieu, maGhe], map: "DatVe_indexes")
+  @@id([maLichChieu, maGhe])
+  @@index([maLichChieu, maGhe], map: "DatVe_indexes")
 }

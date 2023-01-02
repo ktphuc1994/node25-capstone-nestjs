@@ -47,11 +47,7 @@ export class AuthService {
       return result;
     }
 
-    throw new UnauthorizedException({
-      statusCode: HttpStatus.UNAUTHORIZED,
-      message: 'Incorrect Password',
-      content: 'UNAUTHORIZED',
-    });
+    throw new UnauthorizedException('Incorrect Password');
   }
 
   // USER LOGIN - Create authtoken
