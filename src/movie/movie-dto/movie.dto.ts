@@ -40,7 +40,8 @@ export class MovieEntity implements Phim {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   hinhAnh: string;
 
   @IsString()

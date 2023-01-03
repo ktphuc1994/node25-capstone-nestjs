@@ -186,7 +186,7 @@ export class CreateScheduleDto extends OmitType(ScheduleEntity, [
 
 export class SeatDto extends OmitType(SeatEntity, ['isRemoved']) {}
 
-export class lichChieuCumRapOldDto {
+export class lichChieuCumRapRawDto {
   maCumRap: string;
   tenCumRap: string;
   diaChi: string;
@@ -201,7 +201,7 @@ export class lichChieuCumRapOldDto {
     }[];
   }[];
 }
-export class lichChieuCumRapNewDto {
+export class lichChieuCumRapDto {
   maCumRap: string;
   tenCumRap: string;
   diaChi: string;
@@ -212,15 +212,15 @@ export class lichChieuCumRapNewDto {
     ngayGioChieu: string;
   }[];
 }
-export class lichChieuPhimOldDto {
+export class lichChieuPhimRawDto {
   maHeThongRap: string;
   tenHeThongRap: string;
   logo: string;
-  cumRap: Array<lichChieuCumRapOldDto>;
+  cumRap: Array<lichChieuCumRapRawDto>;
 }
-export class lichChieuPhimNewDto {
+export class lichChieuPhimDto {
   maHeThongRap: string;
   tenHeThongRap: string;
   logo: string;
-  cumRap: Array<lichChieuCumRapNewDto>;
+  cumRap: Array<lichChieuCumRapDto>;
 }

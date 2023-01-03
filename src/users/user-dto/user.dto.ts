@@ -1,4 +1,10 @@
-import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType,
+  PickType,
+} from '@nestjs/swagger';
 import { NguoiDung } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import {
@@ -7,6 +13,7 @@ import {
   IsString,
   IsNotEmpty,
   IsEnum,
+  IsOptional,
 } from 'class-validator';
 
 export enum LoaiNguoiDung {
@@ -23,6 +30,7 @@ export class NguoiDungEntity implements NguoiDung {
   taiKhoan: number;
 
   @IsEmail()
+  @IsNotEmpty()
   @ApiProperty()
   @Expose()
   email: string;
@@ -45,6 +53,7 @@ export class NguoiDungEntity implements NguoiDung {
   soDT: string;
 
   @IsEnum(LoaiNguoiDung)
+  @IsNotEmpty()
   @ApiProperty()
   @Expose()
   loaiNguoiDung: string;
@@ -69,15 +78,33 @@ export class CreateNguoiDungDto extends OmitType(NguoiDungEntity, [
   'isRemoved',
 ]) {}
 
-export class UpdateNguoiDungDto extends OmitType(NguoiDungEntity, [
-  'taiKhoan',
-  'loaiNguoiDung',
-  'isRemoved',
+export class UpdateNguoiDungDto extends PickType(NguoiDungEntity, [
+  'email',
+  'matKhau',
 ]) {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
-  matKhauMoi: string;
+  @ApiPropertyOptional()
+  hoTen?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @ApiPropertyOptional()
+  soDT?: string;
+
+  @IsOptional()
+  @IsEmail()
+  @IsNotEmpty()
+  @ApiPropertyOptional()
+  emailMoi?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @ApiPropertyOptional()
+  matKhauMoi?: string;
 }
 
 export class CreateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
@@ -85,6 +112,16 @@ export class CreateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
   'isRemoved',
 ]) {}
 
-export class UpdateNguoiDungDtoAdmin extends OmitType(NguoiDungEntity, [
+export class UpdateNguoiDungDtoAdminAll extends OmitType(NguoiDungEntity, [
+  'taiKhoan',
   'isRemoved',
 ]) {}
+export class UpdateNguoiDungDtoAdmin extends PartialType(
+  UpdateNguoiDungDtoAdminAll,
+) {
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty()
+  @Expose()
+  taiKhoan: number;
+}

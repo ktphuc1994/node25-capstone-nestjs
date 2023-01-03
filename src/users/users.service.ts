@@ -76,13 +76,13 @@ export class UsersService {
   ): Promise<PaginationRes<NguoiDungDto>> {
     const [userList, totalItems] = await Promise.all([
       prisma.nguoiDung.findMany({
-        where: { hoTen: { contains: tuKhoa } },
+        where: { hoTen: { contains: tuKhoa }, isRemoved: false },
         skip: (currentPage - 1) * itemsPerPage,
         take: itemsPerPage,
         select: nguoiDungSelectNoPass,
       }),
       prisma.nguoiDung.count({
-        where: { hoTen: { contains: tuKhoa } },
+        where: { hoTen: { contains: tuKhoa }, isRemoved: false },
       }),
     ]);
 
@@ -115,11 +115,17 @@ export class UsersService {
     updateUserInput: UpdateNguoiDungDto,
     taiKhoan: number,
   ): Promise<NguoiDungDto> {
-    const { matKhauMoi, ...userInfo } = updateUserInput;
-    userInfo.matKhau = bcrypt.hashSync(
-      matKhauMoi,
-      Number(this.configService.get('BCRYPT_SALT')),
-    );
+    const { matKhauMoi, emailMoi, ...userInfo } = updateUserInput;
+    if (matKhauMoi) {
+      userInfo.matKhau = bcrypt.hashSync(
+        matKhauMoi,
+        Number(this.configService.get('BCRYPT_SALT')),
+      );
+    }
+    if (emailMoi) {
+      userInfo.email = emailMoi;
+    }
+
     const updatedUser = await prisma.nguoiDung.update({
       where: { taiKhoan },
       data: userInfo,

@@ -11,10 +11,9 @@ import {
   DefaultValuePipe,
   UseGuards,
   NotFoundException,
-  HttpStatus,
   Delete,
+  ConflictException,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // import local Type
@@ -36,13 +35,14 @@ import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 
 // import local decorator
+import { JwtAuthGuard } from '../guards/jwt.guard';
+import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../decorator/roles.decorator';
-import { RolesGuard } from '../strategy/roles.strategy';
 
 @Controller('QuanLyNguoiDung')
 @ApiTags('Quản lí người dùng')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(LoaiNguoiDung.ADMIN)
 export class UsersController {
   constructor(
@@ -81,7 +81,7 @@ export class UsersController {
   }
 
   @Get('ThongTinTaiKhoan')
-  @Roles(LoaiNguoiDung.USER)
+  @Roles(LoaiNguoiDung.USER, LoaiNguoiDung.ADMIN)
   getUserInfo(@Req() req: RequestWithUser) {
     return req.user;
   }
@@ -108,6 +108,11 @@ export class UsersController {
     @Body() body: UpdateNguoiDungDto,
   ): Promise<NguoiDungDto> {
     const { taiKhoan, email } = req.user;
+    if (email !== body.email) {
+      throw new ConflictException(
+        'Email does not match with the provide token',
+      );
+    }
     await this.authService.validateUser({ email, matKhau: body.matKhau });
     return await this.usersService.updateUser(body, taiKhoan);
   }

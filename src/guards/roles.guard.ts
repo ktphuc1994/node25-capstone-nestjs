@@ -17,13 +17,16 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
+
     if (!requiredRoles) {
       return true;
     }
+
     const { user } = context.switchToHttp().getRequest<RequestWithUser>();
     const isAuthorized = requiredRoles.some(
       (role) => user.loaiNguoiDung === role,
     );
+
     if (isAuthorized) return true;
     throw new UnauthorizedException(
       'Unauthorized. No permission to perform this action.',

@@ -20,7 +20,7 @@ export class TheatreController {
     return await this.theatreService.getTheatreChain(maHeThongRap);
   }
 
-  @Get('LayThongTinCumRapTheoHeThong/:maHeThongRap')
+  @Get('LayThongTinCumRap/:maHeThongRap')
   async getTheatreList(@Param('maHeThongRap') maHeThongRap: string) {
     return await this.theatreService.getTheatreList(maHeThongRap);
   }

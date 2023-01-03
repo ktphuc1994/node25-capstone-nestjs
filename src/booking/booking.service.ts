@@ -28,6 +28,7 @@ export class BookingService {
           rapPhim: {
             lichChieu: { some: { maLichChieu } },
           },
+          isRemoved: false,
         },
         select: { maGhe: true },
       });
@@ -52,7 +53,7 @@ export class BookingService {
         err.code === prismaErrorCodes.unique
       ) {
         throw new ConflictException(
-          'One or more seats have already been booked. Please check and try another ones',
+          'One or more seats have already been booked. Or the request was duplicate. Please check and try again',
         );
       }
       throw err;

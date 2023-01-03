@@ -2,6 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NguoiDungDto } from '../dto/index.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'JwtAuth') {
@@ -13,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'JwtAuth') {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: NguoiDungDto) {
     return payload;
   }
 }

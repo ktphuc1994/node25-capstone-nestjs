@@ -14,11 +14,13 @@ export class PaginationQuery {
   tuKhoa: string = '';
 
   @IsNumber()
+  @IsNotEmpty()
   @Type(() => Number)
   @ApiPropertyOptional()
   currentPage: number = 1;
 
   @IsNumber()
+  @IsNotEmpty()
   @Type(() => Number)
   @ApiPropertyOptional()
   itemsPerPage: number = 10;

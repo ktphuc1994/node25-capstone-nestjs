@@ -26,13 +26,16 @@ export class MovieService {
 
   // LẤY Danh sách Banner
   async getBanner(): Promise<BannerDto[]> {
-    return await prisma.banner.findMany({ select: bannerSelect });
+    return await prisma.banner.findMany({
+      where: { isRemoved: false },
+      select: bannerSelect,
+    });
   }
 
   // LẤY Thông tin Phim
   async getMovieInfo(maPhim: number): Promise<MovieDto> {
     const movieInfo = await prisma.phim.findFirst({
-      where: { maPhim },
+      where: { maPhim, isRemoved: false },
       select: phimSelect,
     });
 
@@ -43,7 +46,7 @@ export class MovieService {
   // LẤY Danh sách Phim theo Tên
   async getMovieList(tenPhim: string): Promise<MovieDto[]> {
     return await prisma.phim.findMany({
-      where: { tenPhim: { contains: tenPhim } },
+      where: { tenPhim: { contains: tenPhim }, isRemoved: false },
       select: phimSelect,
     });
   }
@@ -56,15 +59,22 @@ export class MovieService {
 
     const [movieList, totalItems] = await Promise.all([
       prisma.phim.findMany({
+        skip: (currentPage - 1) * itemsPerPage,
+        take: itemsPerPage,
         where: {
           tenPhim: { contains: tenPhim },
           ngayKhoiChieu: { gte: fromDate, lte: toDate },
+          isRemoved: false,
         },
-        skip: (currentPage - 1) * itemsPerPage,
-        take: itemsPerPage,
         select: phimSelect,
       }),
-      prisma.phim.count({ where: { tenPhim: { contains: tenPhim } } }),
+      prisma.phim.count({
+        where: {
+          tenPhim: { contains: tenPhim },
+          ngayKhoiChieu: { gte: fromDate, lte: toDate },
+          isRemoved: false,
+        },
+      }),
     ]);
 
     return new PagiRes<MovieDto>({
@@ -77,15 +87,17 @@ export class MovieService {
 
   // UPLOAD Hình Phim
   async uploadImage(req: Request, maPhim: number, filename: string) {
-    await prisma.phim.update({
-      data: { hinhAnh: filename },
-      where: { maPhim },
-    });
     const fileUrl = getFileUrl(
       req,
       this.configService.get('MOVIE_URL'),
       filename,
     );
+
+    await prisma.phim.update({
+      data: { hinhAnh: fileUrl },
+      where: { maPhim },
+    });
+
     return { fileUrl };
   }
 

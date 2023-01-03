@@ -18,7 +18,6 @@ import {
   PayloadTooLargeException,
   ParseIntPipe,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -50,8 +49,9 @@ import { MovieService } from './movie.service';
 import { uploadFileFilter } from '../filter/upload-file.filter';
 
 // import local guard
+import { JwtAuthGuard } from '../guards/jwt.guard';
+import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../decorator/roles.decorator';
-import { RolesGuard } from '../strategy/roles.strategy';
 
 @Controller('QuanLyPhim')
 @ApiTags('Quản lý phim')
@@ -95,7 +95,7 @@ export class MovieController {
     type: FileUploadDto,
   })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(LoaiNguoiDung.ADMIN)
   @UseInterceptors(
     FileInterceptor('movie', {
@@ -136,7 +136,7 @@ export class MovieController {
 
   @Post('ThemPhim')
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(LoaiNguoiDung.ADMIN)
   async createMovie(@Body() movieInfo: CreateMovieDto): Promise<MovieDto> {
     return await this.movieService.createMovie(movieInfo);
@@ -144,7 +144,7 @@ export class MovieController {
 
   @Put('CapNhatPhim')
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(LoaiNguoiDung.ADMIN)
   async updateMovie(@Body() updateInfo: UpdateMovieDto): Promise<MovieDto> {
     return await this.movieService.updateMovie(updateInfo);
@@ -152,7 +152,7 @@ export class MovieController {
 
   @Delete('XoaPhim/:maPhim')
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(LoaiNguoiDung.ADMIN)
   async deleteMovie(
     @Param('maPhim', ParseIntPipe) maPhim: number,

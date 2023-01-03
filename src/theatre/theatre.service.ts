@@ -12,8 +12,8 @@ const prisma = new PrismaClient();
 
 // import local DTO
 import {
-  lichChieuPhimOldDto,
-  lichChieuPhimNewDto,
+  lichChieuPhimRawDto,
+  lichChieuPhimDto,
   TheatreChainDto,
   TheatreRoomDto,
 } from './theatre-dto/theatre.dto';
@@ -23,7 +23,7 @@ export class TheatreService {
   // LẤY Thông tin Hệ Thống Rạp
   async getTheatreChain(maHeThongRap: string): Promise<TheatreChainDto[]> {
     return await prisma.heThongRap.findMany({
-      where: { maHeThongRap },
+      where: { maHeThongRap, isRemoved: false },
       select: theatreChainSelect,
     });
   }
@@ -31,7 +31,7 @@ export class TheatreService {
   // LẤY Thông tin Cụm rạp có trong Hệ Thống Rạp
   async getTheatreList(maHeThongRap: string) {
     const theatreList = await prisma.cumRap.findMany({
-      where: { maHeThongRap },
+      where: { maHeThongRap, isRemoved: false },
       select: {
         maCumRap: true,
         tenCumRap: true,
@@ -48,7 +48,7 @@ export class TheatreService {
 
   // LẤY Thông tin lịch chiếu Phim
   async getScreenSchedule(maPhim: number) {
-    const [movieInfo, rawLichChieu]: [MovieDto, lichChieuPhimOldDto[]] =
+    const [movieInfo, rawLichChieu]: [MovieDto, lichChieuPhimRawDto[]] =
       await Promise.all([
         prisma.phim.findFirst({ where: { maPhim }, select: phimSelect }),
         prisma.heThongRap.findMany({
@@ -56,23 +56,30 @@ export class TheatreService {
             cumRap: {
               some: { rapPhim: { some: { lichChieu: { some: { maPhim } } } } },
             },
+            isRemoved: false,
           },
           select: {
             maHeThongRap: true,
             tenHeThongRap: true,
             logo: true,
             cumRap: {
-              where: { rapPhim: { some: { lichChieu: { some: { maPhim } } } } },
+              where: {
+                rapPhim: { some: { lichChieu: { some: { maPhim } } } },
+                isRemoved: false,
+              },
               select: {
                 maCumRap: true,
                 tenCumRap: true,
                 diaChi: true,
                 rapPhim: {
-                  where: { lichChieu: { some: { maPhim } } },
+                  where: { lichChieu: { some: { maPhim } }, isRemoved: false },
                   select: {
                     maRap: true,
                     tenRap: true,
-                    lichChieu: { where: { maPhim }, select: lichChieuSelect },
+                    lichChieu: {
+                      where: { maPhim, isRemoved: false },
+                      select: lichChieuSelect,
+                    },
                   },
                 },
               },
@@ -85,30 +92,28 @@ export class TheatreService {
       throw new NotFoundException('Movie Not Found');
     }
 
-    const lichChieuFinal: lichChieuPhimNewDto[] = rawLichChieu.map(
-      (heThong) => ({
-        maHeThongRap: heThong.maHeThongRap,
-        tenHeThongRap: heThong.tenHeThongRap,
-        logo: heThong.logo,
-        cumRap: heThong.cumRap.map((cr) => ({
-          maCumRap: cr.maCumRap,
-          tenCumRap: cr.tenCumRap,
-          diaChi: cr.diaChi,
-          lichChieuPhim: cr.rapPhim.reduce((accu, curr) => {
-            const lichChieuList = curr.lichChieu.map((item) => ({
-              maLichChieu: item.maLichChieu,
-              maRap: item.maRap,
-              tenRap: curr.tenRap,
-              ngayGioChieu: item.ngayGioChieu,
-            }));
-            return [...accu, ...lichChieuList];
-          }, []),
-        })),
-      }),
-    );
+    const lichChieuFinal: lichChieuPhimDto[] = rawLichChieu.map((heThong) => ({
+      maHeThongRap: heThong.maHeThongRap,
+      tenHeThongRap: heThong.tenHeThongRap,
+      logo: heThong.logo,
+      cumRap: heThong.cumRap.map((cr) => ({
+        maCumRap: cr.maCumRap,
+        tenCumRap: cr.tenCumRap,
+        diaChi: cr.diaChi,
+        lichChieuPhim: cr.rapPhim.reduce((accu, curr) => {
+          const lichChieuList = curr.lichChieu.map((item) => ({
+            maLichChieu: item.maLichChieu,
+            maRap: item.maRap,
+            tenRap: curr.tenRap,
+            ngayGioChieu: item.ngayGioChieu,
+          }));
+          return [...accu, ...lichChieuList];
+        }, []),
+      })),
+    }));
     return { ...movieInfo, heThongRap: lichChieuFinal };
 
-    // MENTOR ƠI, CÓ CÁCH NÀO ĐỂ VIẾT RAW QUERY hoặc BẰNG PRISMA NGẮN HƠN KHÔNG? CHỈ MÌNH VỚI.
+    // MENTOR ƠI, CÓ CÁCH NÀO ĐỂ VIẾT RAW QUERY hoặc BẰNG PRISMA NGẮN HƠN KHÔNG? MENTOR CHỈ MÌNH VỚI.
     // CÁCH DƯỚI VIẾT RAWQUERY VẪN CHẠY ĐƯỢC, NHƯNG MÀ NÓ DÀI QUÁ DÀI.
     // const result = await prisma.$queryRaw`
     // SELECT
@@ -195,23 +200,26 @@ export class TheatreService {
 
   // LẤY Thông tin Lịch chiếu theo hệ thống rạp
   async getScheduleByChain(maHeThongRap: string) {
-    const lichChieuOld = await prisma.heThongRap.findMany({
-      where: { maHeThongRap },
+    const lichChieuRaw = await prisma.heThongRap.findMany({
+      where: { maHeThongRap, isRemoved: false },
       select: {
         maHeThongRap: true,
         tenHeThongRap: true,
         logo: true,
         cumRap: {
+          where: { isRemoved: false },
           select: {
             maCumRap: true,
             tenCumRap: true,
             diaChi: true,
             rapPhim: {
+              where: { isRemoved: false },
               select: {
                 maRap: true,
                 tenRap: true,
                 maCumRap: true,
                 lichChieu: {
+                  where: { isRemoved: false },
                   select: { ...lichChieuSelect, phim: { select: phimSelect } },
                 },
               },
@@ -220,6 +228,10 @@ export class TheatreService {
         },
       },
     });
+
+    if (lichChieuRaw.length === 0) {
+      throw new NotFoundException('maHeThongRap does not exist');
+    }
 
     const getUniqueMaPhim = (rapPhimArr: TheatreRoomDto[]): MovieDto[] => {
       const maPhimList = [];
@@ -233,7 +245,7 @@ export class TheatreService {
       return maPhimList;
     };
 
-    const lichChieuNew = lichChieuOld.map((heThong) => ({
+    const lichChieuFinal = lichChieuRaw.map((heThong) => ({
       maHeThongRap: heThong.maHeThongRap,
       tenHeThongRap: heThong.tenHeThongRap,
       logo: heThong.logo,
@@ -259,7 +271,7 @@ export class TheatreService {
       })),
     }));
 
-    return lichChieuNew;
+    return lichChieuFinal;
   }
 }
 
