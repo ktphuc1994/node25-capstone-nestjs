@@ -23,6 +23,7 @@ export class BookingService {
     try {
       const { maLichChieu, danhSachVe } = bookingInfo;
 
+      // kiểm tra các mã ghế trong danh sách vé có nằm trong danh sách ghế của lịch chiếu không.
       const seatList = await prisma.ghe.findMany({
         where: {
           rapPhim: {
@@ -87,16 +88,15 @@ export class BookingService {
       throw new NotFoundException('Schedule Not Found');
     }
 
-    let iRoot: number = 0;
+    // map lại danh sách ghế để được output như yêu cầu (thêm taiKhoan & daDat, được lấy từ bookedList)
+    let i: number = 0;
     const seatList = seatListRaw.map((seat) => {
       let taiKhoan: number | null = null;
-      for (let i = iRoot; i < bookedList.length; i++) {
-        if (bookedList[i].maGhe === seat.maGhe) {
-          taiKhoan = bookedList[i].taiKhoan;
-          iRoot++;
-          break;
-        }
+      if (i < bookedList.length && bookedList[i].maGhe === seat.maGhe) {
+        taiKhoan = bookedList[i].taiKhoan;
+        i++;
       }
+
       return {
         ...seat,
         daDat: taiKhoan ? true : false,
@@ -106,7 +106,6 @@ export class BookingService {
 
     const { tenCumRap, diaChi } = scheduleInfo.rapPhim.cumRap;
     const { tenPhim, hinhAnh } = scheduleInfo.phim;
-
     const scheduleFullInfo = {
       maLichChieu,
       tenCumRap,

@@ -50,7 +50,10 @@ export class TheatreService {
   async getScreenSchedule(maPhim: number) {
     const [movieInfo, rawLichChieu]: [MovieDto, lichChieuPhimRawDto[]] =
       await Promise.all([
-        prisma.phim.findFirst({ where: { maPhim }, select: phimSelect }),
+        prisma.phim.findFirst({
+          where: { maPhim, isRemoved: false },
+          select: phimSelect,
+        }),
         prisma.heThongRap.findMany({
           where: {
             cumRap: {
@@ -92,6 +95,7 @@ export class TheatreService {
       throw new NotFoundException('Movie Not Found');
     }
 
+    // map lại thông tin lịch chiếu để được output như yêu cầu
     const lichChieuFinal: lichChieuPhimDto[] = rawLichChieu.map((heThong) => ({
       maHeThongRap: heThong.maHeThongRap,
       tenHeThongRap: heThong.tenHeThongRap,
@@ -100,7 +104,9 @@ export class TheatreService {
         maCumRap: cr.maCumRap,
         tenCumRap: cr.tenCumRap,
         diaChi: cr.diaChi,
+        // sử dụng hàm reduce để gộp các Array (lichChieuList) lại thành một Array duy nhất (lichChieuPhim)
         lichChieuPhim: cr.rapPhim.reduce((accu, curr) => {
+          // map lại lichChieu ở trong rapPhim
           const lichChieuList = curr.lichChieu.map((item) => ({
             maLichChieu: item.maLichChieu,
             maRap: item.maRap,
@@ -233,16 +239,19 @@ export class TheatreService {
       throw new NotFoundException('maHeThongRap does not exist');
     }
 
-    const getUniqueMaPhim = (rapPhimArr: TheatreRoomDto[]): MovieDto[] => {
+    // lấy danh sách phim tương ứng với từng Cụm Rạp
+    const getUniquePhim = (rapPhimArr: TheatreRoomDto[]): MovieDto[] => {
       const maPhimList = [];
+      const phimList = [];
       rapPhimArr.forEach((rapPhim) => {
         rapPhim.lichChieu.forEach((lc) => {
           if (!maPhimList.includes(lc.maPhim)) {
-            maPhimList.push(lc.phim);
+            maPhimList.push(lc.maPhim);
+            phimList.push(lc.phim);
           }
         });
       });
-      return maPhimList;
+      return phimList;
     };
 
     const lichChieuFinal = lichChieuRaw.map((heThong) => ({
@@ -253,12 +262,16 @@ export class TheatreService {
         maCumRap: cr.maCumRap,
         tenCumRap: cr.tenCumRap,
         diaChi: cr.diaChi,
-        phim: getUniqueMaPhim(cr.rapPhim).map((movie) => ({
+        // lấy danh sách phim trong rạp phim, rồi map lại danh sách phim để ra output yêu cầu
+        phim: getUniquePhim(cr.rapPhim).map((movie) => ({
           ...movie,
           lichChieuPhim: cr.rapPhim.reduce((accu, curr) => {
+            // filter lịch chiếu tương ứng với phim(movie) hiện tại.
+            // đây là lịch chiếu cho mỗi rạp. Sau khi qua hàm reduce ở trên thì sẽ thành lịch chiếu của cụm rạp
             const lichChieuFiltered = curr.lichChieu.filter((item) => {
               return (item.maPhim = movie.maPhim);
             });
+            // map lại lịch chiếu phim theo output yêu cầu
             const lichChieuList = lichChieuFiltered.map((item) => ({
               maLichChieu: item.maLichChieu,
               maRap: item.maRap,
@@ -274,32 +287,3 @@ export class TheatreService {
     return lichChieuFinal;
   }
 }
-
-// SELECT
-// HeThongRap.ma_he_thong_rap AS 'maHeThongRap',
-// HeThongRap.ten_he_thong_rap AS 'tenHeThongRap',
-// HeThongRap.logo AS 'logo',
-// JSON_ARRAYAGG(
-//  JSON_OBJECT(
-//   'maCumRap', CumRap.ma_cum_rap,
-//   'tenCumRap', CumRap.ten_cum_rap,
-//   'diaChi', CumRap.dia_chi,
-//   'lichChieu',
-//   JSON_ARRAYAGG(
-//    JSON_OBJECT(
-//     'maLichChieu', LichChieu.ma_lich_chieu,
-//     'maRap', LichChieu.ma_rap,
-//     'tenRap', RapPhim.ten_rap,
-//     'ngayGioChieu', LichChieu.ngay_gio_chieu
-//    )
-//   ) AS lichChieuArr
-//  )
-// ) AS cumRap
-// FROM
-// Phim
-// INNER JOIN LichChieu ON Phim.ma_phim = LichChieu.ma_phim
-// INNER JOIN RapPhim ON RapPhim.ma_rap = LichChieu.ma_rap
-// INNER JOIN CumRap ON CumRap.ma_cum_rap = RapPhim.ma_cum_rap
-// INNER JOIN HeThongRap ON HeThongRap.ma_he_thong_rap = CumRap.ma_he_thong_rap
-// WHERE Phim.ma_phim = 10351
-// GROUP BY HeThongRap.ma_he_thong_rap, CumRap.ma_cum_rap;

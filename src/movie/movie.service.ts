@@ -57,6 +57,7 @@ export class MovieService {
   ): Promise<PaginationRes<MovieDto>> {
     const { tenPhim, currentPage, itemsPerPage, fromDate, toDate } = query;
 
+    // lấy danh sách phim theo trang & đếm tổng số lượng phim (toàn bộ phim, không theo trang)
     const [movieList, totalItems] = await Promise.all([
       prisma.phim.findMany({
         skip: (currentPage - 1) * itemsPerPage,
