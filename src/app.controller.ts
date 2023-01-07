@@ -1,8 +1,6 @@
 import {
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -14,18 +12,18 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('JwtAuth'))
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard('JwtAuth'))
+  // @Get()
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
 
-  @Get('test')
-  TestAPI() {
-    throw new UnauthorizedException('Something bad happened', {
-      cause: new Error(),
-      description: 'Some error description',
-    });
-  }
+  // @Get('test')
+  // TestAPI() {
+  //   throw new UnauthorizedException('Something bad happened', {
+  //     cause: new Error(),
+  //     description: 'Some error description',
+  //   });
+  // }
 }

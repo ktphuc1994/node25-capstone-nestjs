@@ -32,26 +32,26 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
 // import local Type
-import { PaginationMovieQuery, PaginationRes } from '../dto/common.dto';
+import { PaginationMovieQuery, PaginationResDto } from '../../dto/common.dto';
 import {
   BannerDto,
   CreateMovieDto,
   MovieDto,
   UpdateMovieDto,
-} from './movie-dto/movie.dto';
-import { FileUploadDto } from '../dto/upload.dto';
-import { LoaiNguoiDung } from '../dto/index.dto';
+  FileUploadDto,
+  LoaiNguoiDung,
+} from '../../dto/index.dto';
 
 // import local service
 import { MovieService } from './movie.service';
 
 // import local filter
-import { uploadFileFilter } from '../filter/upload-file.filter';
+import { uploadFileFilter } from '../../common/exceptions/upload-file.filter';
 
 // import local guard
-import { JwtAuthGuard } from '../guards/jwt.guard';
-import { RolesGuard } from '../guards/roles.guard';
-import { Roles } from '../decorator/roles.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @Controller('QuanLyPhim')
 @ApiTags('Quản lý phim')
@@ -84,7 +84,7 @@ export class MovieController {
   @Get('LayDanhSachPhimPhanTrang')
   async getMoviePagination(
     @Query() query: PaginationMovieQuery,
-  ): Promise<PaginationRes<MovieDto>> {
+  ): Promise<PaginationResDto<MovieDto>> {
     return await this.movieService.getMoviePagination(query);
   }
 

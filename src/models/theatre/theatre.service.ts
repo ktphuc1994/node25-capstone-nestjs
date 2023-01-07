@@ -6,8 +6,8 @@ import {
   phimSelect,
   lichChieuSelect,
   theatreChainSelect,
-} from '../../prisma/prisma-select';
-import { MovieDto } from '../movie/movie-dto/movie.dto';
+} from '../../../prisma/prisma-select';
+import { MovieDto } from '../../dto/index.dto';
 const prisma = new PrismaClient();
 
 // import local DTO

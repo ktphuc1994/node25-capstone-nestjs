@@ -14,13 +14,12 @@ import { BookingService } from './booking.service';
 
 // import local DTO
 import { CreateManyBookingDto } from './booking-dto/booking.dto';
-import { CreateScheduleDto } from '../theatre/theatre-dto/theatre.dto';
-import { LoaiNguoiDung } from '../dto/index.dto';
+import { CreateScheduleDto, LoaiNguoiDung } from '../../dto/index.dto';
 
 // import local guard
-import { JwtAuthGuard } from '../guards/jwt.guard';
-import { RolesGuard } from '../guards/roles.guard';
-import { Roles } from '../decorator/roles.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @Controller('QuanLyDatVe')
 @ApiTags('Quản lý đặt vé')

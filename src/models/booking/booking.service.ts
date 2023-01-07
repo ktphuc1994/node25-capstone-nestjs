@@ -8,13 +8,13 @@ import {
 // import prisma
 import { PrismaClient } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { lichChieuSelect, seatSelect } from '../../prisma/prisma-select';
-import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
+import { lichChieuSelect, seatSelect } from '../../../prisma/prisma-select';
+import { prismaErrorCodes } from '../../common/constants/prismaErrorCode.enum';
 const prisma = new PrismaClient();
 
 // import local DTO
 import { CreateManyBookingDto } from './booking-dto/booking.dto';
-import { CreateScheduleDto } from '../theatre/theatre-dto/theatre.dto';
+import { CreateScheduleDto } from '../../dto/index.dto';
 
 @Injectable()
 export class BookingService {

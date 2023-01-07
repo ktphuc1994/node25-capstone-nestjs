@@ -4,8 +4,7 @@ import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { CumRap, Ghe, HeThongRap, LichChieu, RapPhim } from '@prisma/client';
 
 // import local DTO
-import { MovieDto } from '../../movie/movie-dto/movie.dto';
-import { NguoiDungDto } from '../../users/user-dto/user.dto';
+import { MovieDto } from '../../../dto/index.dto';
 
 // import validator and transformer
 import {

@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 // import prisma
 import { PrismaClient } from '@prisma/client';
-import { bannerSelect, phimSelect } from '../../prisma/prisma-select';
+import { bannerSelect, phimSelect } from '../../../prisma/prisma-select';
 const prisma = new PrismaClient();
 
 // import local DTO
@@ -13,12 +13,13 @@ import {
   CreateMovieDto,
   MovieDto,
   UpdateMovieDto,
-} from './movie-dto/movie.dto';
-import { PaginationMovieQuery, PaginationRes } from '../dto/index.dto';
+  PaginationMovieQuery,
+  PaginationResDto,
+} from '../../dto/index.dto';
 
 // custom response
-import { PagiRes } from '../general/responseModel';
-import { getFileUrl } from '../utils/utils';
+import { PagiRes } from '../../common/models/responseModel';
+import { getFileUrl } from '../../common/utils/utils';
 
 @Injectable()
 export class MovieService {
@@ -54,7 +55,7 @@ export class MovieService {
   // LẤY Danh sách phim theo tên Phim, theo ngày Công Chiêu & Phân trang
   async getMoviePagination(
     query: PaginationMovieQuery,
-  ): Promise<PaginationRes<MovieDto>> {
+  ): Promise<PaginationResDto<MovieDto>> {
     const { tenPhim, currentPage, itemsPerPage, fromDate, toDate } = query;
 
     // lấy danh sách phim theo trang & đếm tổng số lượng phim (toàn bộ phim, không theo trang)

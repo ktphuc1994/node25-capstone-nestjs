@@ -4,8 +4,10 @@ import { ConfigModule } from '@nestjs/config';
 
 // import local modules
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { MovieModule } from './movie/movie.module';
+import { UsersModule } from './models/users/users.module';
+import { MovieModule } from './models/movie/movie.module';
+import { TheatreModule } from './models/theatre/theatre.module';
+import { BookingModule } from './models/booking/booking.module';
 
 // import local controllers
 import { AppController } from './app.controller';
@@ -14,10 +16,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 // import local filter
-import { HttpExceptionFilter } from './filter/http-exceptions.filter';
-import { PrismaClientExceptionFilter } from './filter/prisma-client-exceptions.filter';
-import { TheatreModule } from './theatre/theatre.module';
-import { BookingModule } from './booking/booking.module';
+import { HttpExceptionFilter } from './common/exceptions/http-exceptions.filter';
+import { PrismaClientExceptionFilter } from './common/exceptions/prisma-client-exceptions.filter';
 
 @Module({
   imports: [
@@ -31,10 +31,10 @@ import { BookingModule } from './booking/booking.module';
   controllers: [AppController],
   providers: [
     AppService,
-    // {
-    //   provide: APP_FILTER,
-    //   useClass: HttpExceptionFilter,
-    // },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: PrismaClientExceptionFilter,

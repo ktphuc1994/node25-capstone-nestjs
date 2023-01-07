@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger';
 
 // import prisma model
-import { DatVe, LichChieu } from '@prisma/client';
+import { DatVe } from '@prisma/client';
 
 // import validator
 import { Exclude, Type } from 'class-transformer';
@@ -21,8 +21,8 @@ import {
 } from 'class-validator';
 
 // import local DTO
-import { NguoiDungDto } from '../../dto/index.dto';
-import { ScheduleDto, SeatDto } from '../../theatre/theatre-dto/theatre.dto';
+import { NguoiDungDto } from '../../../dto/index.dto';
+import { ScheduleDto, SeatDto } from '../../../dto/index.dto';
 
 export class BookingEntity implements DatVe {
   @IsInt()

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 // import prisma
 import { NguoiDung, PrismaClient, Prisma } from '@prisma/client';
-import { nguoiDungSelectNoPass } from '../../prisma/prisma-select';
+import { nguoiDungSelectNoPass } from '../../../prisma/prisma-select';
 const prisma = new PrismaClient();
 
 // import bcrypt
@@ -17,10 +17,10 @@ import {
   UpdateNguoiDungDto,
   UpdateNguoiDungDtoAdmin,
 } from './user-dto/user.dto';
+import { PaginationResDto } from '../../dto/index.dto';
 
 // custom response
-import { PagiRes } from '../general/responseModel';
-import { PaginationRes } from '../dto/index.dto';
+import { PagiRes } from '../../common/models/responseModel';
 
 @Injectable()
 export class UsersService {
@@ -73,7 +73,7 @@ export class UsersService {
     tuKhoa: string,
     currentPage: number,
     itemsPerPage: number,
-  ): Promise<PaginationRes<NguoiDungDto>> {
+  ): Promise<PaginationResDto<NguoiDungDto>> {
     const [userList, totalItems] = await Promise.all([
       prisma.nguoiDung.findMany({
         where: { hoTen: { contains: tuKhoa }, isRemoved: false },

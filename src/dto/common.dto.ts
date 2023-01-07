@@ -52,7 +52,7 @@ export class PaginationMovieQuery {
   toDate: string = '2099-01-01T01:00:01.000Z';
 }
 
-export class PaginationRes<T> {
+export class PaginationResDto<T> {
   currentPage: number;
   itemsOnThisPage: number;
   totalPages: number;

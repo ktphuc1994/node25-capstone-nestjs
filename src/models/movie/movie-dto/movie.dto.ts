@@ -20,7 +20,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { Opposite } from '../../decorator/opposite.decorator';
+import { Opposite } from '../../../common/decorators/opposite.decorator';
 
 export class MovieEntity implements Phim {
   @IsInt()

@@ -16,12 +16,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-// import local Type
+// import local DTO
 import {
   PaginationQuery,
-  PaginationRes,
+  PaginationResDto,
   RequestWithUser,
-} from '../dto/common.dto';
+} from '../../dto/index.dto';
 import {
   CreateNguoiDungDtoAdmin,
   LoaiNguoiDung,
@@ -32,12 +32,12 @@ import {
 
 // import local service
 import { UsersService } from './users.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 
 // import local decorator
-import { JwtAuthGuard } from '../guards/jwt.guard';
-import { RolesGuard } from '../guards/roles.guard';
-import { Roles } from '../decorator/roles.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @Controller('QuanLyNguoiDung')
 @ApiTags('Quản lí người dùng')
@@ -72,7 +72,7 @@ export class UsersController {
   async getUsersPagination(
     @Query()
     { tuKhoa, currentPage, itemsPerPage }: PaginationQuery,
-  ): Promise<PaginationRes<NguoiDungDto>> {
+  ): Promise<PaginationResDto<NguoiDungDto>> {
     return this.usersService.getUsersPagination(
       tuKhoa,
       currentPage,
