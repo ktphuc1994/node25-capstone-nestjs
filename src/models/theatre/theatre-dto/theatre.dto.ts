@@ -1,4 +1,9 @@
-import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PickType,
+} from '@nestjs/swagger';
 
 // import prisma
 import { CumRap, Ghe, HeThongRap, LichChieu, RapPhim } from '@prisma/client';
@@ -176,6 +181,13 @@ export class TheatreChainDto extends OmitType(TheatreChainEntity, [
 export class TheatreDto extends OmitType(TheatreEntity, ['isRemoved']) {}
 
 export class ScheduleDto extends OmitType(ScheduleEntity, ['isRemoved']) {}
+export class ScheduleOutputDto extends PickType(ScheduleEntity, [
+  'maLichChieu',
+  'maRap',
+  'ngayGioChieu',
+]) {
+  tenRap: string;
+}
 export class CreateScheduleDto extends OmitType(ScheduleEntity, [
   'maLichChieu',
   'rapPhim',

@@ -16,6 +16,7 @@ import {
   lichChieuPhimDto,
   TheatreChainDto,
   TheatreRoomDto,
+  ScheduleOutputDto,
 } from './theatre-dto/theatre.dto';
 
 @Injectable()
@@ -82,7 +83,6 @@ export class TheatreService {
                     lichChieu: {
                       where: { maPhim, isRemoved: false },
                       select: lichChieuSelect,
-                      orderBy: { ngayGioChieu: 'asc' },
                     },
                   },
                 },
@@ -101,22 +101,31 @@ export class TheatreService {
       maHeThongRap: heThong.maHeThongRap,
       tenHeThongRap: heThong.tenHeThongRap,
       logo: heThong.logo,
-      cumRap: heThong.cumRap.map((cr) => ({
-        maCumRap: cr.maCumRap,
-        tenCumRap: cr.tenCumRap,
-        diaChi: cr.diaChi,
-        // sử dụng hàm reduce để gộp các Array (lichChieuList) lại thành một Array duy nhất (lichChieuPhim)
-        lichChieuPhim: cr.rapPhim.reduce((accu, curr) => {
-          // map lại lichChieu ở trong rapPhim
-          const lichChieuList = curr.lichChieu.map((item) => ({
-            maLichChieu: item.maLichChieu,
-            maRap: item.maRap,
-            tenRap: curr.tenRap,
-            ngayGioChieu: item.ngayGioChieu,
-          }));
-          return [...accu, ...lichChieuList];
-        }, []),
-      })),
+      cumRap: heThong.cumRap.map((cr) => {
+        // sử dụng hàm reduce để gộp các Array (lichChieuList ngay bên dưới) lại thành một Array duy nhất (lichChieuPhim)
+        const lichChieuPhim = cr.rapPhim.reduce<Array<ScheduleOutputDto>>(
+          (accu, curr) => {
+            // map lại lichChieu ở trong rapPhim
+            const lichChieuList = curr.lichChieu.map((item) => ({
+              maLichChieu: item.maLichChieu,
+              maRap: item.maRap,
+              tenRap: curr.tenRap,
+              ngayGioChieu: item.ngayGioChieu,
+            }));
+            return [...accu, ...lichChieuList];
+          },
+          [],
+        );
+        lichChieuPhim.sort(
+          (a, b) => Date.parse(a.ngayGioChieu) - Date.parse(b.ngayGioChieu),
+        );
+        return {
+          maCumRap: cr.maCumRap,
+          tenCumRap: cr.tenCumRap,
+          diaChi: cr.diaChi,
+          lichChieuPhim,
+        };
+      }),
     }));
     return { ...movieInfo, heThongRap: lichChieuFinal };
 
@@ -207,84 +216,82 @@ export class TheatreService {
 
   // LẤY Thông tin Lịch chiếu theo hệ thống rạp
   async getScheduleByChain(maHeThongRap: string) {
-    const lichChieuRaw = await prisma.heThongRap.findMany({
+    const heThongRapList = await prisma.heThongRap.findMany({
       where: { maHeThongRap, isRemoved: false },
       select: {
         maHeThongRap: true,
         tenHeThongRap: true,
         logo: true,
         cumRap: {
-          where: { isRemoved: false },
+          where: {
+            isRemoved: false,
+            rapPhim: { some: { lichChieu: { some: {} } } },
+          },
           select: {
             maCumRap: true,
             tenCumRap: true,
             diaChi: true,
-            rapPhim: {
-              where: { isRemoved: false },
-              select: {
-                maRap: true,
-                tenRap: true,
-                maCumRap: true,
-                lichChieu: {
-                  where: { isRemoved: false },
-                  select: { ...lichChieuSelect, phim: { select: phimSelect } },
-                  orderBy: { ngayGioChieu: 'asc' },
-                },
-              },
-            },
           },
         },
       },
     });
 
-    if (lichChieuRaw.length === 0) {
+    if (heThongRapList.length === 0) {
       throw new NotFoundException('maHeThongRap does not exist');
     }
 
-    // lấy danh sách phim tương ứng với từng Cụm Rạp
-    const getUniquePhim = (rapPhimArr: TheatreRoomDto[]): MovieDto[] => {
-      const maPhimList = [];
-      const phimList = [];
-      rapPhimArr.forEach((rapPhim) => {
-        rapPhim.lichChieu.forEach((lc) => {
-          if (!maPhimList.includes(lc.maPhim)) {
-            maPhimList.push(lc.maPhim);
-            phimList.push(lc.phim);
-          }
-        });
+    // Lấy toàn bộ phim và lịch chiếu của các phim đó theo Cụm Rạp
+    const getMovieAndSchedule = async (maCumRap: string) => {
+      const movieListRaw = await prisma.phim.findMany({
+        where: {
+          lichChieu: { some: { rapPhim: { maCumRap, isRemoved: false } } },
+          isRemoved: false,
+        },
+        select: {
+          ...phimSelect,
+          lichChieu: {
+            where: {
+              rapPhim: { maCumRap, isRemoved: false },
+              isRemoved: false,
+            },
+            select: {
+              maLichChieu: true,
+              maRap: true,
+              ngayGioChieu: true,
+              rapPhim: { select: { tenRap: true } },
+            },
+            orderBy: { ngayGioChieu: 'asc' },
+          },
+        },
       });
-      return phimList;
+      const movieList = movieListRaw.map((movie) => {
+        const { lichChieu, ...movieInfo } = movie;
+        const lichChieuOutput = lichChieu.map((lc) => ({
+          maLichChieu: lc.maLichChieu,
+          maRap: lc.maRap,
+          tenRap: lc.rapPhim.tenRap,
+          ngayGioChieu: lc.ngayGioChieu,
+        }));
+        return { ...movieInfo, lichChieuPhim: lichChieuOutput };
+      });
+      return movieList;
     };
 
-    const lichChieuFinal = lichChieuRaw.map((heThong) => ({
-      maHeThongRap: heThong.maHeThongRap,
-      tenHeThongRap: heThong.tenHeThongRap,
-      logo: heThong.logo,
-      cumRap: heThong.cumRap.map((cr) => ({
-        maCumRap: cr.maCumRap,
-        tenCumRap: cr.tenCumRap,
-        diaChi: cr.diaChi,
-        // lấy danh sách phim trong rạp phim, rồi map lại danh sách phim để ra output yêu cầu
-        phim: getUniquePhim(cr.rapPhim).map((movie) => ({
-          ...movie,
-          lichChieuPhim: cr.rapPhim.reduce((accu, curr) => {
-            // filter lịch chiếu tương ứng với phim(movie) hiện tại.
-            // đây là lịch chiếu cho mỗi rạp. Sau khi qua hàm reduce ở trên thì sẽ thành lịch chiếu của cụm rạp
-            const lichChieuFiltered = curr.lichChieu.filter((item) => {
-              return (item.maPhim = movie.maPhim);
-            });
-            // map lại lịch chiếu phim theo output yêu cầu
-            const lichChieuList = lichChieuFiltered.map((item) => ({
-              maLichChieu: item.maLichChieu,
-              maRap: item.maRap,
-              tenRap: curr.tenRap,
-              ngayGioChieu: item.ngayGioChieu,
-            }));
-            return [...accu, ...lichChieuList];
-          }, []),
-        })),
+    const lichChieuFinal = await Promise.all(
+      heThongRapList.map(async (heThong) => ({
+        maHeThongRap: heThong.maHeThongRap,
+        tenHeThongRap: heThong.tenHeThongRap,
+        logo: heThong.logo,
+        cumRap: await Promise.all(
+          heThong.cumRap.map(async (cr) => ({
+            maCumRap: cr.maCumRap,
+            tenCumRap: cr.tenCumRap,
+            diaChi: cr.diaChi,
+            phim: await getMovieAndSchedule(cr.maCumRap),
+          })),
+        ),
       })),
-    }));
+    );
 
     return lichChieuFinal;
   }
