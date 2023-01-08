@@ -82,6 +82,7 @@ export class TheatreService {
                     lichChieu: {
                       where: { maPhim, isRemoved: false },
                       select: lichChieuSelect,
+                      orderBy: { ngayGioChieu: 'asc' },
                     },
                   },
                 },
@@ -227,6 +228,7 @@ export class TheatreService {
                 lichChieu: {
                   where: { isRemoved: false },
                   select: { ...lichChieuSelect, phim: { select: phimSelect } },
+                  orderBy: { ngayGioChieu: 'asc' },
                 },
               },
             },
