@@ -3,7 +3,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
+import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 // import { TransformToPlainInterceptor } from './interceptors/transform-to-plain.interceptor';
 
 async function bootstrap() {

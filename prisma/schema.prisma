@@ -14,7 +14,7 @@ model Phim {
   maPhim        Int         @id @default(autoincrement()) @map("ma_phim")
   tenPhim       String      @map("ten_phim") @db.VarChar(255)
   trailer       String      @map("trailer") @db.VarChar(255)
-  hinhAnh       String      @map("hinh_anh") @db.Text
+  hinhAnh       String?     @map("hinh_anh") @db.Text
   moTa          String      @map("mo_ta") @db.Text
   ngayKhoiChieu String?     @map("ngay_khoi_chieu") @db.VarChar(50)
   danhGia       Int?        @map("danh_gia")

@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 // import local service
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../models/users/users.service';
 
 // import prisma
 import { PrismaClient } from '@prisma/client';
@@ -18,6 +18,7 @@ const prisma = new PrismaClient();
 // import local DTO
 import {
   CreateNguoiDungDto,
+  CreateNguoiDungDtoAdmin,
   LoginInfoDto,
   NguoiDungDto,
   ResSuccess,
@@ -27,7 +28,7 @@ import {
 import * as bcrypt from 'bcrypt';
 
 // import error codes
-import { prismaErrorCodes } from '../errorCode/prismaErrorCode.enum';
+import { prismaErrorCodes } from '../common/constants/prismaErrorCode.enum';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +57,9 @@ export class AuthService {
   }
 
   // USER REGISTER - Check existance and Create new user
-  async register(registerData: CreateNguoiDungDto): Promise<string> {
+  async register(
+    registerData: CreateNguoiDungDto | CreateNguoiDungDtoAdmin,
+  ): Promise<string> {
     try {
       const hashedPass = bcrypt.hashSync(
         registerData.matKhau,
