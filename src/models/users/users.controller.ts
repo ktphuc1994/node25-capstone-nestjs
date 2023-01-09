@@ -99,7 +99,7 @@ export class UsersController {
 
   @Post('ThemNguoiDung')
   async addUser(@Body() userInfo: CreateNguoiDungDtoAdmin) {
-    return await this.usersService.addUser(userInfo);
+    return await this.authService.register(userInfo);
   }
 
   @Put('CapNhatThongTinNguoiDung')

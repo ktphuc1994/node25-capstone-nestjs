@@ -1,6 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { Request } from 'express';
 import { NguoiDungDto } from './index.dto';
 
@@ -13,13 +19,13 @@ export class PaginationQuery {
   @ApiPropertyOptional()
   tuKhoa: string = '';
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   @Type(() => Number)
   @ApiPropertyOptional()
   currentPage: number = 1;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   @Type(() => Number)
   @ApiPropertyOptional()
@@ -31,12 +37,12 @@ export class PaginationMovieQuery {
   @ApiPropertyOptional()
   tenPhim: string = '';
 
-  @IsNumber()
+  @IsInt()
   @Type(() => Number)
   @ApiPropertyOptional()
   currentPage: number = 1;
 
-  @IsNumber()
+  @IsInt()
   @Type(() => Number)
   @ApiPropertyOptional()
   itemsPerPage: number = 10;

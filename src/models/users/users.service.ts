@@ -102,14 +102,6 @@ export class UsersService {
     });
   }
 
-  // THÊM người dùng
-  async addUser(newUser: Prisma.NguoiDungCreateInput): Promise<NguoiDungDto> {
-    const user = await prisma.nguoiDung.create({ data: newUser });
-    delete user.matKhau;
-    delete user.isRemoved;
-    return user;
-  }
-
   // CẬP NHẬT Thông tin người dùng (user)
   async updateUser(
     updateUserInput: UpdateNguoiDungDto,

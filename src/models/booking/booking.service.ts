@@ -66,13 +66,13 @@ export class BookingService {
     const [seatListRaw, bookedList, scheduleInfo] = await Promise.all([
       prisma.ghe.findMany({
         where: { rapPhim: { lichChieu: { some: { maLichChieu } } } },
-        select: { ...seatSelect, maRap: false },
-        orderBy: { maGhe: 'asc' },
+        select: { ...seatSelect },
+        orderBy: { tenGhe: 'asc' },
       }),
       prisma.datVe.findMany({
         where: { maLichChieu },
         select: { maGhe: true, taiKhoan: true },
-        orderBy: { maGhe: 'asc' },
+        orderBy: { ghe: { tenGhe: 'asc' } },
       }),
       prisma.lichChieu.findFirst({
         where: { maLichChieu },

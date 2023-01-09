@@ -49,7 +49,7 @@ export class TheatreService {
 
   // LẤY Thông tin lịch chiếu Phim
   async getScreenSchedule(maPhim: number) {
-    const [movieInfo, rawLichChieu]: [MovieDto, lichChieuPhimRawDto[]] =
+    const [movieInfo, lichChieuRaw]: [MovieDto, lichChieuPhimRawDto[]] =
       await Promise.all([
         prisma.phim.findFirst({
           where: { maPhim, isRemoved: false },
@@ -97,7 +97,7 @@ export class TheatreService {
     }
 
     // map lại thông tin lịch chiếu để được output như yêu cầu
-    const lichChieuFinal: lichChieuPhimDto[] = rawLichChieu.map((heThong) => ({
+    const lichChieuFinal: lichChieuPhimDto[] = lichChieuRaw.map((heThong) => ({
       maHeThongRap: heThong.maHeThongRap,
       tenHeThongRap: heThong.tenHeThongRap,
       logo: heThong.logo,
@@ -240,7 +240,7 @@ export class TheatreService {
       throw new NotFoundException('maHeThongRap does not exist');
     }
 
-    // Lấy toàn bộ phim và lịch chiếu của các phim đó theo Cụm Rạp
+    // Lấy toàn bộ phim trong cụm rạp và lịch chiếu trong cụm rạp (của các phim đó)
     const getMovieAndSchedule = async (maCumRap: string) => {
       const movieListRaw = await prisma.phim.findMany({
         where: {
@@ -264,6 +264,7 @@ export class TheatreService {
           },
         },
       });
+
       const movieList = movieListRaw.map((movie) => {
         const { lichChieu, ...movieInfo } = movie;
         const lichChieuOutput = lichChieu.map((lc) => ({
@@ -274,6 +275,7 @@ export class TheatreService {
         }));
         return { ...movieInfo, lichChieuPhim: lichChieuOutput };
       });
+
       return movieList;
     };
 

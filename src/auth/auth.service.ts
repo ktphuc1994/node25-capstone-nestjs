@@ -18,6 +18,7 @@ const prisma = new PrismaClient();
 // import local DTO
 import {
   CreateNguoiDungDto,
+  CreateNguoiDungDtoAdmin,
   LoginInfoDto,
   NguoiDungDto,
   ResSuccess,
@@ -56,7 +57,9 @@ export class AuthService {
   }
 
   // USER REGISTER - Check existance and Create new user
-  async register(registerData: CreateNguoiDungDto): Promise<string> {
+  async register(
+    registerData: CreateNguoiDungDto | CreateNguoiDungDtoAdmin,
+  ): Promise<string> {
     try {
       const hashedPass = bcrypt.hashSync(
         registerData.matKhau,
