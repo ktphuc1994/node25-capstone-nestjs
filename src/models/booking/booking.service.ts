@@ -19,9 +19,12 @@ import { CreateScheduleDto } from '../../dto/index.dto';
 @Injectable()
 export class BookingService {
   // POST Đặt vé xem phim
-  async bookTicket(bookingInfo: CreateManyBookingDto): Promise<string> {
+  async bookTicket(
+    bookingInfo: CreateManyBookingDto,
+    taiKhoan: number,
+  ): Promise<string> {
     try {
-      const { maLichChieu, danhSachVe } = bookingInfo;
+      const { maLichChieu, danhSachGhe } = bookingInfo;
 
       // kiểm tra các mã ghế trong danh sách vé có nằm trong danh sách ghế của lịch chiếu không.
       const seatList = await prisma.ghe.findMany({
@@ -33,17 +36,18 @@ export class BookingService {
         },
         select: { maGhe: true },
       });
-      danhSachVe.forEach((ticket) => {
-        const isValid = seatList.find((seat) => seat.maGhe === ticket.maGhe);
+      danhSachGhe.forEach((bookedMaGhe) => {
+        const isValid = seatList.find((seat) => seat.maGhe === bookedMaGhe);
         if (!isValid) {
           throw new BadRequestException(
-            `maGhe #${ticket.maGhe} does not exist in Schedule #${maLichChieu}`,
+            `maGhe #${bookedMaGhe} does not exist in Schedule #${maLichChieu}`,
           );
         }
       });
 
-      const bookingList = danhSachVe.map((ticket) => ({
-        ...ticket,
+      const bookingList = danhSachGhe.map((maGhe) => ({
+        taiKhoan,
+        maGhe,
         maLichChieu,
       }));
       await prisma.datVe.createMany({ data: bookingList });

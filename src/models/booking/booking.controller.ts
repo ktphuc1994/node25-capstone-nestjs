@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -14,7 +15,11 @@ import { BookingService } from './booking.service';
 
 // import local DTO
 import { CreateManyBookingDto } from './booking-dto/booking.dto';
-import { CreateScheduleDto, LoaiNguoiDung } from '../../dto/index.dto';
+import {
+  CreateScheduleDto,
+  LoaiNguoiDung,
+  RequestWithUser,
+} from '../../dto/index.dto';
 
 // import local guard
 import { JwtAuthGuard } from '../../common/guards/jwt.guard';
@@ -30,8 +35,11 @@ export class BookingController {
 
   @Post('DatVe')
   @Roles(LoaiNguoiDung.USER, LoaiNguoiDung.ADMIN)
-  async bookTicket(@Body() bookingInfo: CreateManyBookingDto): Promise<string> {
-    return await this.bookingService.bookTicket(bookingInfo);
+  async bookTicket(
+    @Req() { user }: RequestWithUser,
+    @Body() bookingInfo: CreateManyBookingDto,
+  ): Promise<string> {
+    return await this.bookingService.bookTicket(bookingInfo, user.taiKhoan);
   }
 
   @Get('LayDanhSachGheTheoLichChieu/:maLichChieu')

@@ -16,6 +16,7 @@ import {
   IsBoolean,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   ValidateNested,
 } from 'class-validator';
@@ -59,22 +60,31 @@ export class BookingEntity implements DatVe {
 
 export class BookingDto extends OmitType(BookingEntity, ['isRemoved']) {}
 export class CreateBookingDto extends PickType(BookingEntity, [
-  'taiKhoan',
   'maLichChieu',
   'maGhe',
 ]) {}
 
-export class UserSeatDto extends PickType(BookingEntity, [
-  'taiKhoan',
-  'maGhe',
-]) {}
+// export class UserSeatDto extends PickType(BookingEntity, [
+//   'taiKhoan',
+//   'maGhe',
+// ]) {}
+// export class CreateManyBookingDto extends PickType(BookingEntity, [
+//   'maLichChieu',
+// ]) {
+//   @IsArray()
+//   @ArrayNotEmpty()
+//   @ValidateNested({ each: true })
+//   @Type(() => UserSeatDto)
+//   @ApiProperty({ type: [UserSeatDto] })
+//   danhSachVe: UserSeatDto[];
+// }
+
 export class CreateManyBookingDto extends PickType(BookingEntity, [
   'maLichChieu',
 ]) {
   @IsArray()
   @ArrayNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => UserSeatDto)
-  @ApiProperty({ type: [UserSeatDto] })
-  danhSachVe: UserSeatDto[];
+  @IsInt({ each: true })
+  @ApiProperty({ type: [Number] })
+  danhSachGhe: number[];
 }
