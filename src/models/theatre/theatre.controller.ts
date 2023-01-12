@@ -34,6 +34,7 @@ export class TheatreController {
   @Get('LayThongTinLichChieuTheoHeThongRap')
   @ApiQuery({ name: 'maHeThongRap', required: false })
   async getScheduleByChain(@Query('maHeThongRap') maHeThongRap: string) {
-    return await this.theatreService.getScheduleByChain(maHeThongRap);
+    const maHeThong = maHeThongRap === '' ? undefined : maHeThongRap;
+    return await this.theatreService.getScheduleByChain(maHeThong);
   }
 }
