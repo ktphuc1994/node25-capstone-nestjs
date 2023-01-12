@@ -17,7 +17,8 @@ export class TheatreController {
   async getTheatreChain(
     @Query('maHeThongRap') maHeThongRap: string,
   ): Promise<TheatreChainDto[]> {
-    return await this.theatreService.getTheatreChain(maHeThongRap);
+    const maHeThong = maHeThongRap === '' ? undefined : maHeThongRap;
+    return await this.theatreService.getTheatreChain(maHeThong);
   }
 
   @Get('LayThongTinCumRap/:maHeThongRap')
