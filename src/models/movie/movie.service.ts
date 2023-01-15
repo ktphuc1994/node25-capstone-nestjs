@@ -38,6 +38,7 @@ export class MovieService {
     const movieInfo = await prisma.phim.findFirst({
       where: { maPhim, isRemoved: false },
       select: phimSelect,
+      orderBy: { ngayKhoiChieu: 'asc' },
     });
 
     if (!movieInfo) throw new NotFoundException('Movie is not found.');
@@ -69,6 +70,7 @@ export class MovieService {
           isRemoved: false,
         },
         select: phimSelect,
+        orderBy: { ngayKhoiChieu: 'asc' },
       }),
       prisma.phim.count({
         where: {

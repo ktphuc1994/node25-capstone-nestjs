@@ -1,13 +1,11 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsDateString,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-} from 'class-validator';
 import { Request } from 'express';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
+// import class validator and class transformer
+import { IsDateString, IsInt, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+
+// import local DTO
 import { NguoiDungDto } from './index.dto';
 
 export interface RequestWithUser extends Request {
@@ -19,15 +17,15 @@ export class PaginationQuery {
   @ApiPropertyOptional()
   tuKhoa: string = '';
 
-  @IsInt()
-  @IsNotEmpty()
+  @Transform(({ value }) => (value === 0 ? 1 : value))
   @Type(() => Number)
+  @IsInt()
   @ApiPropertyOptional()
   currentPage: number = 1;
 
-  @IsInt()
-  @IsNotEmpty()
+  @Transform(({ value }) => (value === 0 ? 10 : value))
   @Type(() => Number)
+  @IsInt()
   @ApiPropertyOptional()
   itemsPerPage: number = 10;
 }
@@ -37,25 +35,27 @@ export class PaginationMovieQuery {
   @ApiPropertyOptional()
   tenPhim: string = '';
 
-  @IsInt()
   @Type(() => Number)
+  @Transform(({ value }) => (value === 0 ? 1 : value))
+  @IsInt()
   @ApiPropertyOptional()
   currentPage: number = 1;
 
-  @IsInt()
   @Type(() => Number)
+  @Transform(({ value }) => (value === 0 ? 10 : value))
+  @IsInt()
   @ApiPropertyOptional()
   itemsPerPage: number = 10;
 
+  @Transform(({ value }) => (value === '' ? '1970-01-01' : value))
   @IsDateString()
-  @IsNotEmpty()
   @ApiPropertyOptional()
-  fromDate: string = '1970-01-01T00:00:01.000Z';
+  fromDate: string = '1970-01-01';
 
+  @Transform(({ value }) => (value === '' ? '2099-01-01' : value))
   @IsDateString()
-  @IsNotEmpty()
   @ApiPropertyOptional()
-  toDate: string = '2099-01-01T01:00:01.000Z';
+  toDate: string = '2099-01-01';
 }
 
 export class PaginationResDto<T> {
