@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  Post,
+  Put,
   Param,
   ParseIntPipe,
-  Post,
   Req,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -19,6 +21,7 @@ import {
   CreateScheduleDto,
   LoaiNguoiDung,
   RequestWithUser,
+  updateScheduleDto,
 } from '../../dto/index.dto';
 
 // import local guard
@@ -54,5 +57,19 @@ export class BookingController {
   @Roles(LoaiNguoiDung.ADMIN)
   async createSchedule(@Body() scheduleInfo: CreateScheduleDto) {
     return await this.bookingService.createSchedule(scheduleInfo);
+  }
+
+  @Put('CapNhatLichChieu')
+  @Roles(LoaiNguoiDung.ADMIN)
+  async updateSchedule(@Body() updateInfo: updateScheduleDto) {
+    return await this.bookingService.updateSchedule(updateInfo);
+  }
+
+  @Delete('XoaLichChieu/:maLichChieu')
+  @Roles(LoaiNguoiDung.ADMIN)
+  async deleteSchedule(
+    @Param('maLichChieu', ParseIntPipe) maLichChieu: number,
+  ) {
+    return await this.bookingService.deleteSchedule(maLichChieu);
   }
 }

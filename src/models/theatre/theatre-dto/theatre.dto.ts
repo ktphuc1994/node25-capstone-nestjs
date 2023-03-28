@@ -2,6 +2,7 @@ import {
   ApiProperty,
   ApiPropertyOptional,
   OmitType,
+  PartialType,
   PickType,
 } from '@nestjs/swagger';
 
@@ -194,6 +195,12 @@ export class CreateScheduleDto extends OmitType(ScheduleEntity, [
   'phim',
   'isRemoved',
 ]) {}
+export class updateScheduleDto extends PartialType(CreateScheduleDto) {
+  @IsInt()
+  @IsNotEmpty()
+  @ApiProperty()
+  maLichChieu: number;
+}
 
 export class SeatDto extends OmitType(SeatEntity, ['isRemoved']) {}
 
