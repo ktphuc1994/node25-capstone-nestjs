@@ -131,10 +131,12 @@ export class UsersService {
   async updateUserAdmin(
     userInfo: UpdateNguoiDungDtoAdmin,
   ): Promise<NguoiDungDto> {
-    userInfo.matKhau = bcrypt.hashSync(
-      userInfo.matKhau,
-      Number(this.configService.get('BCRYPT_SALT')),
-    );
+    if (userInfo.matKhau) {
+      userInfo.matKhau = bcrypt.hashSync(
+        userInfo.matKhau,
+        Number(this.configService.get('BCRYPT_SALT')),
+      );
+    }
     const updatedUser = await prisma.nguoiDung.update({
       where: { taiKhoan: userInfo.taiKhoan },
       data: userInfo,
