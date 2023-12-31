@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
 
 // import local DTO
 import { CreateManyBookingDto } from './booking-dto/booking.dto';
-import { CreateScheduleDto } from '../../dto/index.dto';
+import { CreateScheduleDto, updateScheduleDto } from '../../dto/index.dto';
 
 @Injectable()
 export class BookingService {
@@ -128,6 +128,23 @@ export class BookingService {
   async createSchedule(scheduleInfo: CreateScheduleDto) {
     return await prisma.lichChieu.create({
       data: scheduleInfo,
+      select: lichChieuSelect,
+    });
+  }
+
+  // PUT Cập nhật lịch chiếu
+  async updateSchedule(updateInfo: updateScheduleDto) {
+    return await prisma.lichChieu.update({
+      where: { maLichChieu: updateInfo.maLichChieu },
+      data: updateInfo,
+      select: lichChieuSelect,
+    });
+  }
+
+  // DELETE Xóa lịch chiếu
+  async deleteSchedule(maLichChieu: number) {
+    return await prisma.lichChieu.delete({
+      where: { maLichChieu },
       select: lichChieuSelect,
     });
   }

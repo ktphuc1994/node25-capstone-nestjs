@@ -66,7 +66,10 @@ export class MovieService {
         take: itemsPerPage,
         where: {
           tenPhim: { contains: tenPhim },
-          ngayKhoiChieu: { gte: fromDate, lte: toDate },
+          OR: [
+            { ngayKhoiChieu: { gte: fromDate, lte: toDate } },
+            { ngayKhoiChieu: null },
+          ],
           isRemoved: false,
         },
         select: phimSelect,
@@ -75,7 +78,10 @@ export class MovieService {
       prisma.phim.count({
         where: {
           tenPhim: { contains: tenPhim },
-          ngayKhoiChieu: { gte: fromDate, lte: toDate },
+          OR: [
+            { ngayKhoiChieu: { gte: fromDate, lte: toDate } },
+            { ngayKhoiChieu: null },
+          ],
           isRemoved: false,
         },
       }),
